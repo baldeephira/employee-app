@@ -10,3 +10,22 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# build folders
+.DS_Store
+.gradle/
+
+model/.DS_Store
+model/.gradle/
+model/build/
+model/build-eclipse/
+
+api/.DS_Store
+api/build/.gradle/
+api/build/
+api/build-eclipse/
+
+app/.DS_Store
+app/.gradle/
+app/build/
+app/build-eclipse/
