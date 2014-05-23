@@ -18,14 +18,14 @@ hs_err_pid*
 model/.DS_Store
 model/.gradle/
 model/build/
-model/build-eclipse/
+model/bin/
 
 api/.DS_Store
 api/build/.gradle/
 api/build/
-api/build-eclipse/
+api/bin/
 
 app/.DS_Store
 app/.gradle/
 app/build/
-app/build-eclipse/
+app/bin/

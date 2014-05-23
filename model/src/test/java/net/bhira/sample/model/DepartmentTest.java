@@ -25,7 +25,7 @@ package net.bhira.sample.model;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.junit.Test;
 
@@ -237,18 +237,18 @@ public class DepartmentTest {
 	@Test
 	public void testGetCreated() {
 		Department department = new Department();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		department.setCreated(now);
 		assertEquals(now, department.getCreated());
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#setCreated(java.time.LocalDateTime)}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#setCreated(java.new.Date)}.
 	 */
 	@Test
 	public void testSetCreated() {
 		Department department = new Department();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		department.setCreated(now);
 		assertEquals(now, department.getCreated());
 	}
@@ -259,18 +259,18 @@ public class DepartmentTest {
 	@Test
 	public void testGetModified() {
 		Department department = new Department();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		department.setModified(now);
 		assertEquals(now, department.getModified());
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#setModified(java.time.LocalDateTime)}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#setModified(java.util.Date)}.
 	 */
 	@Test
 	public void testSetModified() {
 		Department department = new Department();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		department.setModified(now);
 		assertEquals(now, department.getModified());
 	}

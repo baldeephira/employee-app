@@ -25,8 +25,7 @@ package net.bhira.sample.model;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.junit.Test;
 
@@ -133,18 +132,18 @@ public class EmployeeTest {
 	@Test
 	public void testGetDOB() {
 		Employee employee = new Employee();
-		LocalDate date = LocalDate.of(2000, 10, 25);
+		Date date = new Date();
 		employee.setDOB(date);
 		assertEquals(date, employee.getDOB());
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Employee#setDOB(java.time.LocalDate)}.
+	 * Test method for {@link net.bhira.sample.model.Employee#setDOB(java.util.Date)}.
 	 */
 	@Test
 	public void testSetDOB() {
 		Employee employee = new Employee();
-		LocalDate date = LocalDate.of(2000, 10, 25);
+		Date date = new Date();
 		employee.setDOB(date);
 		assertEquals(date, employee.getDOB());
 	}
@@ -308,18 +307,18 @@ public class EmployeeTest {
 	@Test
 	public void testGetCreated() {
 		Employee employee = new Employee();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		employee.setCreated(now);
 		assertEquals(now, employee.getCreated());
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#setCreated(java.time.LocalDateTime)}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#setCreated(java.util.Date)}.
 	 */
 	@Test
 	public void testSetCreated() {
 		Employee employee = new Employee();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		employee.setCreated(now);
 		assertEquals(now, employee.getCreated());
 	}
@@ -330,18 +329,18 @@ public class EmployeeTest {
 	@Test
 	public void testGetModified() {
 		Employee employee = new Employee();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		employee.setModified(now);
 		assertEquals(now, employee.getModified());
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#setModified(java.time.LocalDateTime)}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#setModified(java.util.Date)}.
 	 */
 	@Test
 	public void testSetModified() {
 		Employee employee = new Employee();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		employee.setModified(now);
 		assertEquals(now, employee.getModified());
 	}

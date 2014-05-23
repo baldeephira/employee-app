@@ -24,7 +24,7 @@
 package net.bhira.sample.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * The base class for all models. It implements the common properties available
@@ -39,8 +39,8 @@ public abstract class BaseModel implements Serializable {
 
 	private long id;
 	private String name;
-	private LocalDateTime created;
-	private LocalDateTime modified;
+	private Date created;
+	private Date modified;
 	private String createdBy;
 	private String modifiedBy;
 	
@@ -60,7 +60,7 @@ public abstract class BaseModel implements Serializable {
 	 * when updating the model. 'Created' time will not be changed.
 	 */
 	public void initModified() {
-		modified = LocalDateTime.now();
+		modified = new Date();
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public abstract class BaseModel implements Serializable {
 	 * that case both created and modified properties will have the same value.
 	 */
 	public void initCreatedModified() {
-		created = modified = LocalDateTime.now();
+		created = modified = new Date();
 	}
 	
 	
@@ -111,7 +111,7 @@ public abstract class BaseModel implements Serializable {
 	 * Get the creation time for this model.
 	 * @return the time this model was created.
 	 */
-	public LocalDateTime getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 	
@@ -119,7 +119,7 @@ public abstract class BaseModel implements Serializable {
 	 * Set the creation time for this model.
 	 * @param created the time this model was created.
 	 */
-	public void setCreated(LocalDateTime created) {
+	public void setCreated(Date created) {
 		this.created = created;
 	}
 
@@ -127,7 +127,7 @@ public abstract class BaseModel implements Serializable {
 	 * Get the last modification time for this model.
 	 * @return the time this model was last modified. 
 	 */
-	public LocalDateTime getModified() {
+	public Date getModified() {
 		return modified;
 	}
 	
@@ -135,7 +135,7 @@ public abstract class BaseModel implements Serializable {
 	 * Set the last modification time for this model.
 	 * @param modified the time this model was last modified.
 	 */
-	public void setModified(LocalDateTime modified) {
+	public void setModified(Date modified) {
 		this.modified = modified;
 	}
 	

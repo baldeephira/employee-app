@@ -23,7 +23,7 @@
  */
 package net.bhira.sample.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * Class used to define an Employee. The employee class is hierarchical, where
@@ -46,7 +46,7 @@ public class Employee extends BaseModel {
 	private long managerId;
 	private String salutation;
 	private Sex sex; 
-	private LocalDate dob;
+	private Date dob;
 	private String title;
 	private Address address;
 	private ContactInfo contactInfo;
@@ -130,7 +130,7 @@ public class Employee extends BaseModel {
 	 * Get the date of birth for the employee.
 	 * @return the date of birth for the employee.
 	 */
-	public LocalDate getDOB() {
+	public Date getDOB() {
 		return dob;
 	}
 	
@@ -138,7 +138,7 @@ public class Employee extends BaseModel {
 	 * Set the date of birth for the employee.
 	 * @param dob the date of birth for the employee.
 	 */
-	public void setDOB(LocalDate dob) {
+	public void setDOB(Date dob) {
 		this.dob = dob;
 	}
 	

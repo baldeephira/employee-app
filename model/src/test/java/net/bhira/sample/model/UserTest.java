@@ -25,7 +25,7 @@ package net.bhira.sample.model;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.junit.Test;
 
@@ -181,9 +181,9 @@ public class UserTest {
 	@Test
 	public void testInitModified() {
 		User user = new User();
-		LocalDateTime before = LocalDateTime.now();
+		Date before = new Date();
 		user.initModified();
-		LocalDateTime after = LocalDateTime.now();
+		Date after = new Date();
 		assertNotNull(user.getModified());
 		assertNull(user.getCreated());
 		assert(before.compareTo(user.getModified()) <= 0);
@@ -196,9 +196,9 @@ public class UserTest {
 	@Test
 	public void testInitCreatedModified() {
 		User user = new User();
-		LocalDateTime before = LocalDateTime.now();
+		Date before = new Date();
 		user.initCreatedModified();
-		LocalDateTime after = LocalDateTime.now();
+		Date after = new Date();
 		assertNotNull(user.getModified());
 		assertNotNull(user.getCreated());
 		assertEquals(user.getModified(), user.getCreated());
@@ -252,18 +252,18 @@ public class UserTest {
 	@Test
 	public void testGetCreated() {
 		User user = new User();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		user.setCreated(now);
 		assertEquals(now, user.getCreated());
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#setCreated(java.time.LocalDateTime)}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#setCreated(java.util.Date)}.
 	 */
 	@Test
 	public void testSetCreated() {
 		User user = new User();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		user.setCreated(now);
 		assertEquals(now, user.getCreated());
 	}
@@ -274,18 +274,18 @@ public class UserTest {
 	@Test
 	public void testGetModified() {
 		User user = new User();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		user.setModified(now);
 		assertEquals(now, user.getModified());
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#setModified(java.time.LocalDateTime)}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#setModified(java.util.Date)}.
 	 */
 	@Test
 	public void testSetModified() {
 		User user = new User();
-		LocalDateTime now = LocalDateTime.now();
+		Date now = new Date();
 		user.setModified(now);
 		assertEquals(now, user.getModified());
 	}
