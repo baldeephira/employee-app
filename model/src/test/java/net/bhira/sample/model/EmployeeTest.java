@@ -240,25 +240,24 @@ public class EmployeeTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#initModified()}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#initForSave()}.
 	 */
 	@Test
-	public void testInitModified() {
+	public void testInitForSave() {
 		Employee employee = new Employee();
-		employee.initModified();
+		employee.setId(123);
+		employee.initForSave();
 		assertNotNull(employee.getModified());
+		assertNotNull(employee.getModifiedBy());
 		assertNull(employee.getCreated());
-	}
+		assertNull(employee.getCreatedBy());
 
-	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#initCreatedModified()}.
-	 */
-	@Test
-	public void testInitCreatedModified() {
-		Employee employee = new Employee();
-		employee.initCreatedModified();
+		employee = new Employee();
+		employee.initForSave();
 		assertNotNull(employee.getModified());
+		assertNotNull(employee.getModifiedBy());
 		assertNotNull(employee.getCreated());
+		assertNotNull(employee.getCreatedBy());
 	}
 
 	/**

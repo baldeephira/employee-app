@@ -170,25 +170,24 @@ public class CompanyTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#initModified()}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#initForSave()}.
 	 */
 	@Test
-	public void testInitModified() {
+	public void testInitForSave() {
 		Company company = new Company();
-		company.initModified();
+		company.setId(123);
+		company.initForSave();
 		assertNotNull(company.getModified());
+		assertNotNull(company.getModifiedBy());
 		assertNull(company.getCreated());
-	}
+		assertNull(company.getCreatedBy());
 
-	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#initCreatedModified()}.
-	 */
-	@Test
-	public void testInitCreatedModified() {
-		Company company = new Company();
-		company.initCreatedModified();
+		company = new Company();
+		company.initForSave();
 		assertNotNull(company.getModified());
+		assertNotNull(company.getModifiedBy());
 		assertNotNull(company.getCreated());
+		assertNotNull(company.getCreatedBy());
 	}
 
 	/**

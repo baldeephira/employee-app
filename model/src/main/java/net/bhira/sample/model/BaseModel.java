@@ -27,9 +27,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * The base class for all models. It implements the common properties available
- * in all first class models. All externally exposed first class models must
- * inherit from this base model.
+ * The base class for all models. It implements the common properties available in all first class
+ * models. All externally exposed first class models must inherit from this base model.
  * 
  * @author Baldeep Hira
  */
@@ -43,49 +42,47 @@ public abstract class BaseModel implements Serializable {
 	private Date modified;
 	private String createdBy;
 	private String modifiedBy;
-	
-	
-	//-------------------------UTILITY METHODS----------------------------
-	
+
+	// -------------------------UTILITY METHODS----------------------------
+
 	/**
 	 * Check this model is a new instance.
+	 * 
 	 * @return true if the model is a new instance.
 	 */
 	public boolean isNew() {
 		return (id == 0);
 	}
-	
+
 	/**
-	 * Initialize 'modified' to current time. This should be invoked
-	 * when updating the model. 'Created' time will not be changed.
+	 * Initialize the modified date and user to current time and user. If it is a new model then
+	 * created time and user will also be set to current time and user.
 	 */
-	public void initModified() {
+	public void initForSave() {
 		modified = new Date();
+		modifiedBy = "system";
+		if (isNew()) {
+			created = modified;
+			createdBy = modifiedBy;
+		}
 	}
-	
-	/**
-	 * Initialize 'modified' and 'created' properties to the current time.
-	 * This should be invoked when saving the model for the first time. In
-	 * that case both created and modified properties will have the same value.
-	 */
-	public void initCreatedModified() {
-		created = modified = new Date();
-	}
-	
-	
-	//-------------------------GETTERS AND SETTERS-------------------------
-	
+
+	// -------------------------GETTERS AND SETTERS-------------------------
+
 	/**
 	 * Get the ID for the model.
+	 * 
 	 * @return the ID of the model.
 	 */
 	public long getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Set the ID for the model.
-	 * @param id the ID of the model.
+	 * 
+	 * @param id
+	 *            the ID of the model.
 	 */
 	public void setId(long id) {
 		this.id = id;
@@ -93,31 +90,37 @@ public abstract class BaseModel implements Serializable {
 
 	/**
 	 * Get the name of the model.
+	 * 
 	 * @return the name of the model.
 	 */
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Set the name for the model.
-	 * @param name the name of the model.
+	 * 
+	 * @param name
+	 *            the name of the model.
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * Get the creation time for this model.
+	 * 
 	 * @return the time this model was created.
 	 */
 	public Date getCreated() {
 		return created;
 	}
-	
+
 	/**
 	 * Set the creation time for this model.
-	 * @param created the time this model was created.
+	 * 
+	 * @param created
+	 *            the time this model was created.
 	 */
 	public void setCreated(Date created) {
 		this.created = created;
@@ -125,47 +128,56 @@ public abstract class BaseModel implements Serializable {
 
 	/**
 	 * Get the last modification time for this model.
-	 * @return the time this model was last modified. 
+	 * 
+	 * @return the time this model was last modified.
 	 */
 	public Date getModified() {
 		return modified;
 	}
-	
+
 	/**
 	 * Set the last modification time for this model.
-	 * @param modified the time this model was last modified.
+	 * 
+	 * @param modified
+	 *            the time this model was last modified.
 	 */
 	public void setModified(Date modified) {
 		this.modified = modified;
 	}
-	
+
 	/**
-	 * Get the name of the user who created this model. 
+	 * Get the name of the user who created this model.
+	 * 
 	 * @return the name of user who created this model.
 	 */
 	public String getCreatedBy() {
 		return createdBy;
 	}
-	
+
 	/**
 	 * Set the name of the user who created this model.
-	 * @param createdBy the name of the user who created this model.
+	 * 
+	 * @param createdBy
+	 *            the name of the user who created this model.
 	 */
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	
+
 	/**
 	 * Get the name of the user who last modified this model
+	 * 
 	 * @return the name of the user who last modified this model
 	 */
 	public String getModifiedBy() {
 		return modifiedBy;
 	}
-	
+
 	/**
 	 * Set the name of the user who last modified this model.
-	 * @param modifiedBy the name of the user who last modified this model
+	 * 
+	 * @param modifiedBy
+	 *            the name of the user who last modified this model
 	 */
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;

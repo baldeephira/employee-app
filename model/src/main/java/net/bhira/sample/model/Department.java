@@ -81,9 +81,6 @@ public class Department extends BaseModel {
 	 */
 	public void setBillingAddress(Address address) {
 		billingAddress = address;
-		if (billingAddress != null) {
-			billingAddress.setType(Address.AddressType.BILLING);
-		}
 	}
 	
 	/**
@@ -100,9 +97,6 @@ public class Department extends BaseModel {
 	 */
 	public void setShippingAddress(Address address) {
 		shippingAddress = address;
-		if (shippingAddress != null) {
-			shippingAddress.setType(Address.AddressType.SHIPPING);
-		}
 	}
 
 	/**

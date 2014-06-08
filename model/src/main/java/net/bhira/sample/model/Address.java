@@ -34,16 +34,9 @@ import java.io.Serializable;
  */
 public class Address implements Serializable {
 
-	public enum AddressType {
-		NONE,
-		BILLING,
-		SHIPPING
-	};
-	
 	private static final long serialVersionUID = 20140520L;
 
 	private long id;
-	private AddressType addressType;
 	private String street;
 	private String city;
 	private String state;
@@ -80,22 +73,6 @@ public class Address implements Serializable {
 		this.id = id;
 	}
 
-	/**
-	 * Get the type of address.
-	 * @return the type of address as defined in AddressType.
-	 */
-	public AddressType getType() {
-		return addressType;
-	}
-	
-	/**
-	 * Set the type of address.
-	 * @param type the type of address as defined in AddressType.
-	 */
-	public void setType(AddressType type) {
-		this.addressType = type;
-	}
-	
 	/**
 	 * Get the street name.
 	 * @return the name of the street.

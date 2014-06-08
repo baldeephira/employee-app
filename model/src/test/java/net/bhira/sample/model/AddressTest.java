@@ -65,26 +65,6 @@ public class AddressTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Address#getType()}.
-	 */
-	@Test
-	public void testGetType() {
-		Address address = new Address();
-		address.setType(Address.AddressType.BILLING);
-		assertEquals(Address.AddressType.BILLING, address.getType());
-	}
-
-	/**
-	 * Test method for {@link net.bhira.sample.model.Address#setType(net.bhira.sample.model.Address.AddressType)}.
-	 */
-	@Test
-	public void testSetType() {
-		Address address = new Address();
-		address.setType(Address.AddressType.SHIPPING);
-		assertEquals(Address.AddressType.SHIPPING, address.getType());
-	}
-
-	/**
 	 * Test method for {@link net.bhira.sample.model.Address#getStreet()}.
 	 */
 	@Test

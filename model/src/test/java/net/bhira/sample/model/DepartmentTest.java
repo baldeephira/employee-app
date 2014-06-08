@@ -170,27 +170,26 @@ public class DepartmentTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#initModified()}.
+	 * Test method for {@link net.bhira.sample.model.BaseModel#initForSave()}.
 	 */
 	@Test
-	public void testInitModified() {
+	public void testInitForSave() {
 		Department department = new Department();
-		department.initModified();
+		department.setId(123);
+		department.initForSave();
 		assertNotNull(department.getModified());
+		assertNotNull(department.getModifiedBy());
 		assertNull(department.getCreated());
-	}
+		assertNull(department.getCreatedBy());
 
-	/**
-	 * Test method for {@link net.bhira.sample.model.BaseModel#initCreatedModified()}.
-	 */
-	@Test
-	public void testInitCreatedModified() {
-		Department department = new Department();
-		department.initCreatedModified();
+		department = new Department();
+		department.initForSave();
 		assertNotNull(department.getModified());
+		assertNotNull(department.getModifiedBy());
 		assertNotNull(department.getCreated());
+		assertNotNull(department.getCreatedBy());
 	}
-
+	
 	/**
 	 * Test method for {@link net.bhira.sample.model.BaseModel#getId()}.
 	 */
