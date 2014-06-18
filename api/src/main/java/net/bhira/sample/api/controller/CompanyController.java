@@ -24,6 +24,7 @@
 package net.bhira.sample.api.controller;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,21 +71,25 @@ public class CompanyController {
 	 */
 	@RequestMapping(value = "/company", method = RequestMethod.GET)
 	@ResponseBody
-	public String getAll(HttpServletResponse response) {
-		String body = "";
-		try {
-			LOG.debug("servicing GET company/");
-			List<Company> list = companyService.loadAll();
-			int count = (list == null) ? 0 : list.size();
-			LOG.debug("GET company/ count = {}", count);
-			body = JsonUtil.createGson().toJson(list);
-		} catch (Exception ex) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			body = ex.getLocalizedMessage();
-			LOG.warn("Error loading companies. {}", body);
-			LOG.debug("Load error stacktrace: ", ex);
-		}
-		return body;
+	public Callable<String> getAll(HttpServletResponse response) {
+		return new Callable<String>() {
+			public String call() throws Exception {
+				String body = "";
+				try {
+					LOG.debug("servicing GET company/");
+					List<Company> list = companyService.loadAll();
+					int count = (list == null) ? 0 : list.size();
+					LOG.debug("GET company/ count = {}", count);
+					body = JsonUtil.createGson().toJson(list);
+				} catch (Exception ex) {
+					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					body = ex.getLocalizedMessage();
+					LOG.warn("Error loading companies. {}", body);
+					LOG.debug("Load error stacktrace: ", ex);
+				}
+				return body;
+			}
+		};
 	}
 
 	/**
@@ -99,24 +104,28 @@ public class CompanyController {
 	 */
 	@RequestMapping(value = "/company/{companyId}", method = RequestMethod.GET)
 	@ResponseBody
-	public String getCompany(@PathVariable long companyId, HttpServletResponse response) {
-		String body = "";
-		try {
-			LOG.debug("servicing GET company/{}", companyId);
-			Company company = companyService.load(companyId);
-			LOG.debug("GET company/{}, found = {}", companyId, company != null);
-			if (company == null) {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			} else {
-				body = JsonUtil.createGson().toJson(company);
+	public Callable<String> getCompany(@PathVariable long companyId, HttpServletResponse response) {
+		return new Callable<String>() {
+			public String call() throws Exception {
+				String body = "";
+				try {
+					LOG.debug("servicing GET company/{}", companyId);
+					Company company = companyService.load(companyId);
+					LOG.debug("GET company/{}, found = {}", companyId, company != null);
+					if (company == null) {
+						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					} else {
+						body = JsonUtil.createGson().toJson(company);
+					}
+				} catch (Exception ex) {
+					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					body = ex.getLocalizedMessage();
+					LOG.warn("Error loading company/{}. {}", companyId, body);
+					LOG.debug("Load error stacktrace: ", ex);
+				}
+				return body;
 			}
-		} catch (Exception ex) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			body = ex.getLocalizedMessage();
-			LOG.warn("Error loading company/{}. {}", companyId, body);
-			LOG.debug("Load error stacktrace: ", ex);
-		}
-		return body;
+		};
 	}
 
 	/**
@@ -131,26 +140,30 @@ public class CompanyController {
 	 */
 	@RequestMapping(value = "/company", method = RequestMethod.POST)
 	@ResponseBody
-	public String saveCompany(HttpServletRequest request, HttpServletResponse response) {
-		String body = "";
-		try {
-			LOG.debug("servicing POST company");
-			Gson gson = JsonUtil.createGson();
-			Company company = gson.fromJson(request.getReader(), Company.class);
-			LOG.debug("POST company received json = {}", gson.toJson(company));
-			company = companyService.save(company);
-			LOG.debug("POST company/ successful with return ID = {}", company.getId());
-		} catch (Exception ex) {
-			if (ex instanceof JsonSyntaxException) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			} else {
-				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+	public Callable<String> saveCompany(HttpServletRequest request, HttpServletResponse response) {
+		return new Callable<String>() {
+			public String call() throws Exception {
+				String body = "";
+				try {
+					LOG.debug("servicing POST company");
+					Gson gson = JsonUtil.createGson();
+					Company company = gson.fromJson(request.getReader(), Company.class);
+					LOG.debug("POST company received json = {}", gson.toJson(company));
+					company = companyService.save(company);
+					LOG.debug("POST company/ successful with return ID = {}", company.getId());
+				} catch (Exception ex) {
+					if (ex instanceof JsonSyntaxException) {
+						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					} else {
+						response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					}
+					body = ex.getLocalizedMessage();
+					LOG.warn("Error saving company. {}", body);
+					LOG.debug("Save error stacktrace: ", ex);
+				}
+				return body;
 			}
-			body = ex.getLocalizedMessage();
-			LOG.warn("Error saving company. {}", body);
-			LOG.debug("Save error stacktrace: ", ex);
-		}
-		return body;
+		};
 	}
 
 	/**
@@ -165,22 +178,26 @@ public class CompanyController {
 	 */
 	@RequestMapping(value = "/company/{companyId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public String deleteCompany(@PathVariable long companyId, HttpServletResponse response) {
-		LOG.debug("servicing DELETE company/{}", companyId);
-		String body = "";
-		try {
-			boolean success = companyService.delete(companyId);
-			LOG.debug("DELETE company/{} status = {}", companyId, success);
-			if (!success) {
-				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+	public Callable<String> deleteCompany(@PathVariable long companyId, HttpServletResponse response) {
+		return new Callable<String>() {
+			public String call() throws Exception {
+				LOG.debug("servicing DELETE company/{}", companyId);
+				String body = "";
+				try {
+					boolean success = companyService.delete(companyId);
+					LOG.debug("DELETE company/{} status = {}", companyId, success);
+					if (!success) {
+						response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					}
+				} catch (Exception ex) {
+					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					body = ex.getLocalizedMessage();
+					LOG.warn("Error deleting company/{}. {}", companyId, body);
+					LOG.debug("Delete error stacktrace: ", ex);
+				}
+				return body;
 			}
-		} catch (Exception ex) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			body = ex.getLocalizedMessage();
-			LOG.warn("Error deleting company/{}. {}", companyId, body);
-			LOG.debug("Delete error stacktrace: ", ex);
-		}
-		return body;
+		};
 	}
 
 }
