@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.bhira.sample.api.startup;
+package net.bhira.sample.common;
 
 import java.io.IOException;
 
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Servlet Filter used to set the character encoding to UTF8 and content type to application/json.
- * 
+ *
  * @author Baldeep Hira
  */
 public class CharacterEncodingFilter implements Filter {

@@ -20,6 +20,11 @@ model/.gradle/
 model/build/
 model/bin/
 
+common/.DS_Store
+common/.gradle/
+common/build/
+common/bin/
+
 api/.DS_Store
 api/build/.gradle/
 api/build/

@@ -15,7 +15,7 @@
 	<!-- configure filters -->
 	<filter>
 		<filter-name>CharacterEncodingFilter</filter-name>
-		<filter-class>net.bhira.sample.api.startup.CharacterEncodingFilter</filter-class>
+		<filter-class>net.bhira.sample.common.CharacterEncodingFilter</filter-class>
 		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>

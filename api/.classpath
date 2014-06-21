@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/model"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry kind="var" path="EXT_LIB/org.springframework/4.0.5.RELEASE/spring-beans-4.0.5.RELEASE.jar"/>
 	<classpathentry kind="var" path="EXT_LIB/org.springframework/4.0.5.RELEASE/spring-jdbc-4.0.5.RELEASE.jar"/>
 	<classpathentry kind="var" path="EXT_LIB/org.springframework/4.0.5.RELEASE/spring-tx-4.0.5.RELEASE.jar"/>

@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.bhira.sample.api.service.CompanyService;
-import net.bhira.sample.api.util.JsonUtil;
+import net.bhira.sample.common.JsonUtil;
 import net.bhira.sample.model.Company;
 
 import org.slf4j.Logger;

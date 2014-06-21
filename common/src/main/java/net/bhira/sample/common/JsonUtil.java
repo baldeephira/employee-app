@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.bhira.sample.api.util;
+package net.bhira.sample.common;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -41,19 +41,19 @@ import com.google.gson.JsonSerializer;
 
 /**
  * Class providing some JSON utilities.
- * 
+ *
  * @author Baldeep Hira
  */
 public class JsonUtil {
 
-	private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-	private static final String TIMEZONE = "UTC";
+	static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+	static final String TIMEZONE = "UTC";
 
 	/**
 	 * Create a customized version of Gson that handles Date formats and timezones correctly. It
 	 * uses UTC date format for parsing and formating dates and expects the date string values to be
 	 * formatted in UTC timezone.
-	 * 
+	 *
 	 * @return an instance of {@link com.google.gson.Gson}.
 	 */
 	public static Gson createGson() {
