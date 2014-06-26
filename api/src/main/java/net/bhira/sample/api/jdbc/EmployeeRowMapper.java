@@ -29,20 +29,21 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import net.bhira.sample.model.Address;
-import net.bhira.sample.model.Company;
+import net.bhira.sample.model.Employee;
 import net.bhira.sample.model.ContactInfo;
 
 /**
- * Helper class used to map a single row in jdbc ResultSet to {@link net.bhira.sample.model.Company}
- * object.
+ * Helper class used to map a single row in jdbc ResultSet to
+ * {@link net.bhira.sample.model.Employee} object.
  * 
  * @author Baldeep Hira
  */
-public class CompanyRowMapper implements RowMapper<Company> {
+public class EmployeeRowMapper implements RowMapper<Employee> {
 
 	/**
-	 * Constructor for CompanyRowMapper that creates an instance of
-	 * {@link net.bhira.sample.model.Company} from row represented by rowNum in the given ResultSet.
+	 * Constructor for EmployeeRowMapper that creates an instance of
+	 * {@link net.bhira.sample.model.Employee} from row represented by rowNum in the given
+	 * ResultSet.
 	 * 
 	 * @param rs
 	 *            an instance of ResultSet to be processed.
@@ -50,38 +51,41 @@ public class CompanyRowMapper implements RowMapper<Company> {
 	 *            integer representing the row number in ResultSet.
 	 */
 	@Override
-	public Company mapRow(ResultSet rs, int rowNum) throws SQLException {
-		Company company = new Company();
-		company.setId(rs.getLong("id"));
-		company.setName(rs.getString("name"));
-		company.setIndustry(rs.getString("industry"));
+	public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+		Employee employee = new Employee();
+		employee.setId(rs.getLong("id"));
+		employee.setCompanyId(rs.getLong("companyid"));
+		employee.setDepartmentId(rs.getLong("departmentid"));
+		employee.setName(rs.getString("name"));
+		employee.setManagerId(rs.getLong("managerid"));
+		employee.setSalutation(rs.getString("salutation"));
+		employee.setDOB(rs.getDate("dob"));
+		employee.setTitle(rs.getString("title"));
 
-		long billingAddressId = rs.getLong("billingaddr");
-		if (billingAddressId > 0) {
-			Address address = new Address();
-			address.setId(billingAddressId);
-			company.setBillingAddress(address);
+		String sex = rs.getString("sex");
+		if (sex != null) {
+			employee.setSex(Employee.Sex.valueOf(sex));
 		}
 
-		long shippingAddressId = rs.getLong("shippingaddr");
-		if (shippingAddressId > 0) {
+		long addrId = rs.getLong("addr");
+		if (addrId > 0) {
 			Address address = new Address();
-			address.setId(shippingAddressId);
-			company.setShippingAddress(address);
+			address.setId(addrId);
+			employee.setAddress(address);
 		}
 
 		long contactInfoId = rs.getLong("contactinfo");
 		if (contactInfoId > 0) {
 			ContactInfo contactInfo = new ContactInfo();
 			contactInfo.setId(contactInfoId);
-			company.setContactInfo(contactInfo);
+			employee.setContactInfo(contactInfo);
 		}
 
-		company.setCreated(rs.getTimestamp("created"));
-		company.setModified(rs.getTimestamp("modified"));
-		company.setCreatedBy(rs.getString("createdby"));
-		company.setModifiedBy(rs.getString("modifiedby"));
-		return company;
+		employee.setCreated(rs.getTimestamp("created"));
+		employee.setModified(rs.getTimestamp("modified"));
+		employee.setCreatedBy(rs.getString("createdby"));
+		employee.setModifiedBy(rs.getString("modifiedby"));
+		return employee;
 	}
 
 }

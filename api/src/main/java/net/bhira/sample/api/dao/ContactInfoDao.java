@@ -45,14 +45,13 @@ public interface ContactInfoDao {
 
 	/**
 	 * Save the specified {@link net.bhira.sample.model.ContactInfo} to repository. It will take
-	 * care of both insert and update scenarios. It returns the updated
-	 * {@link net.bhira.sample.model.ContactInfo} with assigned ID.
+	 * care of both insert and update scenarios. In case of insert the newly assigned ID is set back
+	 * in the passed contactInfo model.
 	 * 
 	 * @param contactInfo
 	 *            an instance of {@link net.bhira.sample.model.ContactInfo}.
-	 * @return an instance of {@link net.bhira.sample.model.ContactInfo} with assigned ID.
 	 */
-	public ContactInfo save(ContactInfo contactInfo);
+	public void save(ContactInfo contactInfo);
 
 	/**
 	 * Delete the instance of {@link net.bhira.sample.model.ContactInfo} identified by given

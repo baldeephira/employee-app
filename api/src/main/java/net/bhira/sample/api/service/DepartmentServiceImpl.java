@@ -28,51 +28,51 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.bhira.sample.api.dao.CompanyDao;
-import net.bhira.sample.model.Company;
+import net.bhira.sample.api.dao.DepartmentDao;
+import net.bhira.sample.model.Department;
 
 /**
- * Implementation of {@link net.bhira.sample.api.service.CompanyService}. It provides CRUD
- * operations for {@link net.bhira.sample.model.Company}.
+ * Implementation of {@link net.bhira.sample.api.service.DepartmentService}. It provides CRUD
+ * operations for {@link net.bhira.sample.model.Department}.
  * 
  * @author Baldeep Hira
  */
-@Service("companyService")
-public class CompanyServiceImpl implements CompanyService {
+@Service("departmentService")
+public class DepartmentServiceImpl implements DepartmentService {
 
 	@Autowired
-	CompanyDao companyDao;
+	DepartmentDao departmentDao;
 
 	/**
-	 * @see net.bhira.sample.api.service.CompanyService#load(long)
+	 * @see net.bhira.sample.api.service.DepartmentService#load(long)
 	 */
 	@Override
-	public Company load(long companyId) {
-		return companyDao.load(companyId);
+	public Department load(long departmentId) {
+		return departmentDao.load(departmentId);
 	}
 
 	/**
-	 * @see net.bhira.sample.api.service.CompanyService#save(net.bhira.sample.model.Company)
+	 * @see net.bhira.sample.api.service.DepartmentService#save(net.bhira.sample.model.Department)
 	 */
 	@Override
-	public void save(Company company) {
-		companyDao.save(company);
+	public void save(Department department) {
+		departmentDao.save(department);
 	}
 
 	/**
-	 * @see net.bhira.sample.api.service.CompanyService#delete(long)
+	 * @see net.bhira.sample.api.service.DepartmentService#delete(long)
 	 */
 	@Override
-	public boolean delete(long companyId) {
-		return companyDao.delete(companyId);
+	public boolean delete(long departmentId) {
+		return departmentDao.delete(departmentId);
 	}
 
 	/**
-	 * @see net.bhira.sample.api.service.CompanyService#loadAll()
+	 * @see net.bhira.sample.api.service.DepartmentService#loadByCompany()
 	 */
 	@Override
-	public List<Company> loadAll() {
-		return companyDao.loadAll();
+	public List<Department> loadByCompany(long companyId) {
+		return departmentDao.loadByCompany(companyId);
 	}
 
 }

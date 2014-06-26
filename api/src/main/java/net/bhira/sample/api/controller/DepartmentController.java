@@ -29,9 +29,9 @@ import java.util.concurrent.Callable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.bhira.sample.api.service.CompanyService;
+import net.bhira.sample.api.service.DepartmentService;
 import net.bhira.sample.common.JsonUtil;
-import net.bhira.sample.model.Company;
+import net.bhira.sample.model.Department;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,81 +46,47 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Controller class for company resource. It services all API requests for company resource.
+ * Controller class for department resource. It services all API requests for department resource.
  * 
  * @author Baldeep Hira
  */
-@Controller("companyController")
-public class CompanyController {
+@Controller("departmentController")
+public class DepartmentController {
 
 	/**
 	 * private singleton instance of the SLF4J logger for this class.
 	 */
-	private static final Logger LOG = LoggerFactory.getLogger(CompanyController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DepartmentController.class);
 
 	@Autowired
-	CompanyService companyService;
+	DepartmentService departmentService;
 
 	/**
-	 * Fetch all the companies in the system. It will return a light weight version of
-	 * {@link net.bhira.sample.model.Company} model without the address and contactInfo objects.
-	 * 
-	 * @param response
-	 *            the http response to which the results will be written.
-	 * @return an array of {@link net.bhira.sample.model.Company} instances as JSON.
-	 */
-	@RequestMapping(value = "/company", method = RequestMethod.GET)
-	@ResponseBody
-	public Callable<String> getAll(HttpServletResponse response) {
-		return new Callable<String>() {
-			public String call() throws Exception {
-				String body = "";
-				try {
-					LOG.debug("servicing GET company/");
-					List<Company> list = companyService.loadAll();
-					int count = (list == null) ? 0 : list.size();
-					LOG.debug("GET company/ count = {}", count);
-					body = JsonUtil.createGson().toJson(list);
-				} catch (Exception ex) {
-					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-					body = ex.getLocalizedMessage();
-					LOG.warn("Error loading companies. {}", body);
-					LOG.debug("Load error stacktrace: ", ex);
-				}
-				return body;
-			}
-		};
-	}
-
-	/**
-	 * Fetch the instance of {@link net.bhira.sample.model.Company} represented by given companyId
-	 * and return it as JSON object.
+	 * Fetch all the departments for the given company ID. It will return a light weight version of
+	 * {@link net.bhira.sample.model.Department} model without the address and contactInfo objects.
 	 * 
 	 * @param companyId
 	 *            the ID for {@link net.bhira.sample.model.Company}.
 	 * @param response
 	 *            the http response to which the results will be written.
-	 * @return an instance of {@link net.bhira.sample.model.Company} as JSON.
+	 * @return an array of {@link net.bhira.sample.model.Department} instances as JSON.
 	 */
-	@RequestMapping(value = "/company/{companyId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/department/company/{companyId}", method = RequestMethod.GET)
 	@ResponseBody
-	public Callable<String> getCompany(@PathVariable long companyId, HttpServletResponse response) {
+	public Callable<String> getDepartmentsByCompany(@PathVariable long companyId, HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
 				String body = "";
 				try {
-					LOG.debug("servicing GET company/{}", companyId);
-					Company company = companyService.load(companyId);
-					LOG.debug("GET company/{}, found = {}", companyId, company != null);
-					if (company == null) {
-						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-					} else {
-						body = JsonUtil.createGson().toJson(company);
-					}
+					LOG.debug("servicing GET department/company/{}", companyId);
+					List<Department> list = departmentService.loadByCompany(companyId);
+					int count = (list == null) ? 0 : list.size();
+					LOG.debug("GET department/company/{} count = {}", companyId, count);
+					body = JsonUtil.createGson().toJson(list);
 				} catch (Exception ex) {
 					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 					body = ex.getLocalizedMessage();
-					LOG.warn("Error loading company/{}. {}", companyId, body);
+					LOG.warn("Error loading department/company/{}. {}", companyId, body);
 					LOG.debug("Load error stacktrace: ", ex);
 				}
 				return body;
@@ -129,8 +95,44 @@ public class CompanyController {
 	}
 
 	/**
-	 * Save the given instance of {@link net.bhira.sample.model.Company}. It will create a new
-	 * instance of the company does not exist, otherwise it will update the existing instance.
+	 * Fetch the instance of {@link net.bhira.sample.model.Department} represented by given
+	 * departmentId and return it as JSON object.
+	 * 
+	 * @param departmentId
+	 *            the ID for {@link net.bhira.sample.model.Department}.
+	 * @param response
+	 *            the http response to which the results will be written.
+	 * @return an instance of {@link net.bhira.sample.model.Department} as JSON.
+	 */
+	@RequestMapping(value = "/department/{departmentId}", method = RequestMethod.GET)
+	@ResponseBody
+	public Callable<String> getDepartment(@PathVariable long departmentId, HttpServletResponse response) {
+		return new Callable<String>() {
+			public String call() throws Exception {
+				String body = "";
+				try {
+					LOG.debug("servicing GET department/{}", departmentId);
+					Department department = departmentService.load(departmentId);
+					LOG.debug("GET department/{}, found = {}", departmentId, department != null);
+					if (department == null) {
+						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					} else {
+						body = JsonUtil.createGson().toJson(department);
+					}
+				} catch (Exception ex) {
+					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					body = ex.getLocalizedMessage();
+					LOG.warn("Error loading department/{}. {}", departmentId, body);
+					LOG.debug("Load error stacktrace: ", ex);
+				}
+				return body;
+			}
+		};
+	}
+
+	/**
+	 * Save the given instance of {@link net.bhira.sample.model.Department}. It will create a new
+	 * instance of the department does not exist, otherwise it will update the existing instance.
 	 * 
 	 * @param request
 	 *            the http request containing JSON payload in its body.
@@ -138,19 +140,19 @@ public class CompanyController {
 	 *            the http response to which the results will be written.
 	 * @return the error message, if save was not successful.
 	 */
-	@RequestMapping(value = "/company", method = RequestMethod.POST)
+	@RequestMapping(value = "/department", method = RequestMethod.POST)
 	@ResponseBody
-	public Callable<String> saveCompany(HttpServletRequest request, HttpServletResponse response) {
+	public Callable<String> saveDepartment(HttpServletRequest request, HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
 				String body = "";
 				try {
-					LOG.debug("servicing POST company");
+					LOG.debug("servicing POST department");
 					Gson gson = JsonUtil.createGson();
-					Company company = gson.fromJson(request.getReader(), Company.class);
-					LOG.debug("POST company received json = {}", gson.toJson(company));
-					companyService.save(company);
-					LOG.debug("POST company/ successful with return ID = {}", company.getId());
+					Department department = gson.fromJson(request.getReader(), Department.class);
+					LOG.debug("POST department received json = {}", gson.toJson(department));
+					departmentService.save(department);
+					LOG.debug("POST department/ successful with return ID = {}", department.getId());
 				} catch (Exception ex) {
 					if (ex instanceof JsonSyntaxException) {
 						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -158,7 +160,7 @@ public class CompanyController {
 						response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 					}
 					body = ex.getLocalizedMessage();
-					LOG.warn("Error saving company. {}", body);
+					LOG.warn("Error saving department. {}", body);
 					LOG.debug("Save error stacktrace: ", ex);
 				}
 				return body;
@@ -167,32 +169,32 @@ public class CompanyController {
 	}
 
 	/**
-	 * Delete the instance of {@link net.bhira.sample.model.Company} represented by given companyId.
-	 * In case of an error return the error message.
+	 * Delete the instance of {@link net.bhira.sample.model.Department} represented by given
+	 * departmentId. In case of an error return the error message.
 	 * 
-	 * @param companyId
-	 *            the ID for {@link net.bhira.sample.model.Company}.
+	 * @param departmentId
+	 *            the ID for {@link net.bhira.sample.model.Department}.
 	 * @param response
 	 *            the http response to which the results will be written.
 	 * @return the error message, if save was not successful.
 	 */
-	@RequestMapping(value = "/company/{companyId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/department/{departmentId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public Callable<String> deleteCompany(@PathVariable long companyId, HttpServletResponse response) {
+	public Callable<String> deleteDepartment(@PathVariable long departmentId, HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
-				LOG.debug("servicing DELETE company/{}", companyId);
+				LOG.debug("servicing DELETE department/{}", departmentId);
 				String body = "";
 				try {
-					boolean success = companyService.delete(companyId);
-					LOG.debug("DELETE company/{} status = {}", companyId, success);
+					boolean success = departmentService.delete(departmentId);
+					LOG.debug("DELETE department/{} status = {}", departmentId, success);
 					if (!success) {
 						response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 					}
 				} catch (Exception ex) {
 					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 					body = ex.getLocalizedMessage();
-					LOG.warn("Error deleting company/{}. {}", companyId, body);
+					LOG.warn("Error deleting department/{}. {}", departmentId, body);
 					LOG.debug("Delete error stacktrace: ", ex);
 				}
 				return body;

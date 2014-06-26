@@ -82,9 +82,9 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 	 * @see net.bhira.sample.api.dao.ContactInfoDao#save(net.bhira.sample.model.ContactInfo)
 	 */
 	@Override
-	public ContactInfo save(ContactInfo contactInfo) {
+	public void save(ContactInfo contactInfo) {
 		if (contactInfo == null) {
-			return null;
+			return;
 		}
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -115,8 +115,6 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 							contactInfo.getWebsite(), contactInfo.getId() });
 			LOG.debug("updated contactInfo, count = {}, id = {}", count, contactInfo.getId());
 		}
-
-		return contactInfo;
 	}
 
 	/**

@@ -45,14 +45,13 @@ public interface AddressDao {
 
 	/**
 	 * Save the specified {@link net.bhira.sample.model.Address} to repository. It will take care of
-	 * both insert and update scenarios. It returns the updated
-	 * {@link net.bhira.sample.model.Address} with assigned ID.
+	 * both insert and update scenarios. In case of insert the newly assigned ID is set back in the
+	 * passed address model.
 	 * 
 	 * @param address
 	 *            an instance of {@link net.bhira.sample.model.Address}.
-	 * @return an instance of {@link net.bhira.sample.model.Address} with assigned ID.
 	 */
-	public Address save(Address address);
+	public void save(Address address);
 
 	/**
 	 * Delete the instance of {@link net.bhira.sample.model.Address} identified by given addressId.

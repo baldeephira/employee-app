@@ -82,9 +82,9 @@ public class AddressDaoImpl implements AddressDao {
 	 * @see net.bhira.sample.api.dao.AddressDao#save(net.bhira.sample.model.Address)
 	 */
 	@Override
-	public Address save(Address address) {
+	public void save(Address address) {
 		if (address == null) {
-			return null;
+			return;
 		}
 
 		boolean isNew = address.isNew();
@@ -117,8 +117,6 @@ public class AddressDaoImpl implements AddressDao {
 					address.getId() });
 			LOG.debug("updated address, count = {},  id = {}", count, address.getId());
 		}
-
-		return address;
 	}
 
 	/**

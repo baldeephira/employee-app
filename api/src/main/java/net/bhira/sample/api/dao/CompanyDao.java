@@ -49,14 +49,13 @@ public interface CompanyDao {
 
 	/**
 	 * Save the specified {@link net.bhira.sample.model.Company} to repository. It will take care of
-	 * both insert and update scenarios. It returns the updated
-	 * {@link net.bhira.sample.model.Company} with assigned ID.
+	 * both insert and update scenarios. In case of insert the newly assigned ID is set back in the
+	 * passed company model.
 	 * 
 	 * @param company
 	 *            an instance of {@link net.bhira.sample.model.Company}.
-	 * @return an instance of {@link net.bhira.sample.model.Company} with assigned ID.
 	 */
-	public Company save(Company company);
+	public void save(Company company);
 
 	/**
 	 * Delete the instance of {@link net.bhira.sample.model.Company} identified by given companyId.

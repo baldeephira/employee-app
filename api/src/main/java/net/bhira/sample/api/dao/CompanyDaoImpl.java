@@ -63,7 +63,7 @@ public class CompanyDaoImpl implements CompanyDao {
 	private static final String SQL_LOAD_BY_ID = "select * from company where id = ?";
 	private static final String SQL_LOAD_ALL = "select * from company";
 	private static final String SQL_INSERT = "insert into company"
-			+ " (name,industry,billingaddr,shippingaddr,contactinfo,created,modified,createdby,modifiedby)"
+			+ " (name, industry, billingaddr, shippingaddr, contactinfo, created, modified, createdby, modifiedby)"
 			+ " values (?,?,?,?,?,?,?,?,?)";
 	private static final String SQL_UPDATE = "update company set name = ?, industry = ?, billingaddr = ?,"
 			+ "shippingaddr = ?, contactinfo = ?, modified = ?, modifiedby = ? where id = ?";
@@ -110,9 +110,9 @@ public class CompanyDaoImpl implements CompanyDao {
 	 * @see net.bhira.sample.api.dao.CompanyDao#save(net.bhira.sample.model.Company)
 	 */
 	@Override
-	public Company save(Company company) {
+	public void save(Company company) {
 		if (company == null) {
-			return null;
+			return;
 		}
 
 		company.initForSave();
@@ -133,19 +133,19 @@ public class CompanyDaoImpl implements CompanyDao {
 			if (oldModel != null && oldModel.getBillingAddress() != null) {
 				company.getBillingAddress().setId(oldModel.getBillingAddress().getId());
 			}
-			company.setBillingAddress(addressDao.save(company.getBillingAddress()));
+			addressDao.save(company.getBillingAddress());
 		}
 		if (company.getShippingAddress() != null) {
 			if (oldModel != null && oldModel.getShippingAddress() != null) {
 				company.getShippingAddress().setId(oldModel.getShippingAddress().getId());
 			}
-			company.setShippingAddress(addressDao.save(company.getShippingAddress()));
+			addressDao.save(company.getShippingAddress());
 		}
 		if (company.getContactInfo() != null) {
 			if (oldModel != null && oldModel.getContactInfo() != null) {
 				company.getContactInfo().setId(oldModel.getContactInfo().getId());
 			}
-			company.setContactInfo(contactInfoDao.save(company.getContactInfo()));
+			contactInfoDao.save(company.getContactInfo());
 		}
 
 		int count = 0;
@@ -219,8 +219,6 @@ public class CompanyDaoImpl implements CompanyDao {
 				contactInfoDao.delete(oldModel.getContactInfo().getId());
 			}
 		}
-
-		return company;
 	}
 
 	/**
