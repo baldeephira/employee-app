@@ -43,6 +43,7 @@ public class Employee extends BaseModel {
 	private static final long serialVersionUID = 20140520L;
 
 	private long companyId;
+	private long departmentId;
 	private long managerId;
 	private String salutation;
 	private Sex sex; 
@@ -76,6 +77,22 @@ public class Employee extends BaseModel {
  	 */
 	public void setCompanyId(long companyId) {
 		this.companyId = companyId;
+	}
+	
+	/**
+	 * Get the ID of the department to which the employee belongs.
+	 * @return the ID of the department to which the employee belongs.
+	 */
+	public long getDepartmentId() {
+		return departmentId;
+	}
+	
+	/**
+	 * Set the ID of the department to which the employee belongs.
+	 * @param departmentId the ID of the department to which the employee belongs.
+ 	 */
+	public void setDepartmentId(long departmentId) {
+		this.departmentId = departmentId;
 	}
 	
 	/**

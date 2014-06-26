@@ -67,6 +67,26 @@ public class EmployeeTest {
 	}
 
 	/**
+	 * Test method for {@link net.bhira.sample.model.Employee#getDepartmentId()}.
+	 */
+	@Test
+	public void testGetDepartmentId() {
+		Employee employee = new Employee();
+		employee.setDepartmentId(1234);
+		assertEquals(1234, employee.getDepartmentId());
+	}
+
+	/**
+	 * Test method for {@link net.bhira.sample.model.Employee#setDepartmentId(long)}.
+	 */
+	@Test
+	public void testSetDepartmentId() {
+		Employee employee = new Employee();
+		employee.setDepartmentId(1234);
+		assertEquals(1234, employee.getDepartmentId());
+	}
+
+	/**
 	 * Test method for {@link net.bhira.sample.model.Employee#getManagerId()}.
 	 */
 	@Test

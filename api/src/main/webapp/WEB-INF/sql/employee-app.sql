@@ -63,8 +63,9 @@ create index idx_department on department(companyid);
 create table employee (
 	id				bigint unsigned auto_increment,
 	companyid		bigint unsigned not null,
+	departmentid	bigint unsigned,
 	name			varchar(100) not null,
-	manager			bigint unsigned,
+	managerid		bigint unsigned,
 	salutation		varchar(10),
 	sex				varchar(10),
 	dob				date,
@@ -76,9 +77,9 @@ create table employee (
 	createdby		varchar(100) not null,
 	modifiedby		varchar(100) not null,
 	primary key (id),
-	unique key uq_employee (companyid, name),
 	constraint fk_employee_compy foreign key (companyid) references company(id),
-	constraint fk_employee_mgr foreign key (manager) references employee(id),
+	constraint fk_employee_dept foreign key (departmentid) references department(id),
+	constraint fk_employee_mgr foreign key (managerid) references employee(id),
 	constraint fk_employee_addr foreign key (addr) references address(id),
 	constraint fk_employee_cinfo foreign key (contactinfo) references contactinfo(id)
 ) engine=InnoDB, default character set utf8, collate utf8_general_ci;
