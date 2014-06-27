@@ -23,6 +23,7 @@
  */
 package net.bhira.sample.api.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -150,6 +151,9 @@ public class CompanyController {
 					Company company = gson.fromJson(request.getReader(), Company.class);
 					LOG.debug("POST company received json = {}", gson.toJson(company));
 					companyService.save(company);
+					HashMap<String,Long> map = new HashMap<String,Long>();
+					map.put("id", company.getId());
+					body = gson.toJson(map);
 					LOG.debug("POST company/ successful with return ID = {}", company.getId());
 				} catch (Exception ex) {
 					if (ex instanceof JsonSyntaxException) {
