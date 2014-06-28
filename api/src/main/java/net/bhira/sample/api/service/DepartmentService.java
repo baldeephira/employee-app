@@ -25,6 +25,10 @@ package net.bhira.sample.api.service;
 
 import java.util.List;
 
+import net.bhira.sample.common.exception.DuplicateNameException;
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Department;
 
 /**
@@ -52,8 +56,17 @@ public interface DepartmentService {
 	 * 
 	 * @param department
 	 *            an instance of {@link net.bhira.sample.model.Department}.
+	 * @throws ObjectNotFoundException
+	 *             if the department instance being saved is not found in repository.
+	 * @throws DuplicateNameException
+	 *             if the department name being used is duplicate and is already in use.
+	 * @throws InvalidObjectException
+	 *             if the department instance being saved is invalid.
+	 * @throws InvalidReferenceException
+	 *             if the department instance being saved has invalid references.
 	 */
-	public void save(Department department);
+	public void save(Department department) throws ObjectNotFoundException, DuplicateNameException,
+			InvalidObjectException, InvalidReferenceException;;
 
 	/**
 	 * Delete the instance of {@link net.bhira.sample.model.Department} identified by given

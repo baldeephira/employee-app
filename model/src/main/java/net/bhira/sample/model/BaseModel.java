@@ -26,6 +26,8 @@ package net.bhira.sample.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import net.bhira.sample.common.exception.InvalidObjectException;
+
 /**
  * The base class for all models. It implements the common properties available in all first class
  * models. All externally exposed first class models must inherit from this base model.
@@ -64,6 +66,31 @@ public abstract class BaseModel implements Serializable {
 		if (isNew()) {
 			created = modified;
 			createdBy = modifiedBy;
+		}
+	}
+
+	/**
+	 * Check if this instance of BaseModel is valid. It throws and exception with detailed message
+	 * in case of instance is invalid.
+	 * 
+	 * @throws InvalidObjectException
+	 *             if instance is invalid.
+	 */
+	public void validate() throws InvalidObjectException {
+		if (name == null || name.trim().length() == 0) {
+			throw new InvalidObjectException("The required attribute 'name' is missing.");
+		}
+		if (created == null) {
+			throw new InvalidObjectException("The required attribute 'created' is missing.");
+		}
+		if (modified == null) {
+			throw new InvalidObjectException("The required attribute 'modified' is missing.");
+		}
+		if (createdBy == null || createdBy.trim().length() == 0) {
+			throw new InvalidObjectException("The required attribute 'createdBy' is missing.");
+		}
+		if (modifiedBy == null || modifiedBy.trim().length() == 0) {
+			throw new InvalidObjectException("The required attribute 'modifiedBy' is missing.");
 		}
 	}
 

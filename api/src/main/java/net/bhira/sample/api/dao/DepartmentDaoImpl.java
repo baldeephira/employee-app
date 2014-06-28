@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -42,6 +43,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import net.bhira.sample.api.jdbc.DepartmentRowMapper;
+import net.bhira.sample.common.exception.DuplicateNameException;
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Department;
 
 /**
@@ -110,116 +115,144 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	 * @see net.bhira.sample.api.dao.DepartmentDao#save(net.bhira.sample.model.Department)
 	 */
 	@Override
-	public void save(Department department) {
-		if (department == null) {
-			return;
-		}
-
-		department.initForSave();
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-		// load old model, for cleaning dependent tables
-		Department oldModel = null;
-		if (!department.isNew()) {
-			List<Department> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { department.getId() },
-					new DepartmentRowMapper());
-			if (list != null && !list.isEmpty()) {
-				oldModel = list.get(0);
+	public void save(Department department) throws ObjectNotFoundException, DuplicateNameException,
+			InvalidObjectException, InvalidReferenceException {
+		try {
+			if (department == null) {
+				throw new InvalidObjectException("Department object is null.");
 			}
-		}
 
-		// save contained objects in dependent tables
-		if (department.getBillingAddress() != null) {
-			if (oldModel != null && oldModel.getBillingAddress() != null) {
-				department.getBillingAddress().setId(oldModel.getBillingAddress().getId());
-			}
-			addressDao.save(department.getBillingAddress());
-		}
-		if (department.getShippingAddress() != null) {
-			if (oldModel != null && oldModel.getShippingAddress() != null) {
-				department.getShippingAddress().setId(oldModel.getShippingAddress().getId());
-			}
-			addressDao.save(department.getShippingAddress());
-		}
-		if (department.getContactInfo() != null) {
-			if (oldModel != null && oldModel.getContactInfo() != null) {
-				department.getContactInfo().setId(oldModel.getContactInfo().getId());
-			}
-			contactInfoDao.save(department.getContactInfo());
-		}
+			department.initForSave();
+			department.validate();
 
-		int count = 0;
-		if (department.isNew()) {
-			// for new department, construct SQL insert statement
-			KeyHolder keyHolder = new GeneratedKeyHolder();
-			count = jdbcTemplate.update(new PreparedStatementCreator() {
-				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-					PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
-							Statement.RETURN_GENERATED_KEYS);
-					pstmt.setLong(1, department.getCompanyId());
-					pstmt.setString(2, department.getName());
-					if (department.getBillingAddress() == null) {
-						pstmt.setNull(3, java.sql.Types.BIGINT);
-					} else {
-						pstmt.setLong(3, department.getBillingAddress().getId());
-					}
-					if (department.getShippingAddress() == null) {
-						pstmt.setNull(4, java.sql.Types.BIGINT);
-					} else {
-						pstmt.setLong(4, department.getShippingAddress().getId());
-					}
-					if (department.getContactInfo() == null) {
-						pstmt.setNull(5, java.sql.Types.BIGINT);
-					} else {
-						pstmt.setLong(5, department.getContactInfo().getId());
-					}
-					pstmt.setTimestamp(6, new Timestamp(department.getCreated().getTime()));
-					pstmt.setTimestamp(7, new Timestamp(department.getModified().getTime()));
-					pstmt.setString(8, department.getCreatedBy());
-					pstmt.setString(9, department.getModifiedBy());
-					return pstmt;
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+			// load old model, for cleaning dependent tables
+			Department oldModel = null;
+			if (!department.isNew()) {
+				List<Department> list = jdbcTemplate.query(SQL_LOAD_BY_ID,
+						new Object[] { department.getId() }, new DepartmentRowMapper());
+				if (list != null && !list.isEmpty()) {
+					oldModel = list.get(0);
 				}
-			}, keyHolder);
-
-			// fetch the newly created auto-increment ID
-			department.setId(keyHolder.getKey().longValue());
-			LOG.debug("inserted department, count = {}, id = {}", count, department.getId());
-
-		} else {
-			// for existing department, construct SQL update statement
-			Long bAddrId = department.getBillingAddress() == null ? null : department.getBillingAddress()
-					.getId();
-			Long sAddrId = department.getShippingAddress() == null ? null : department.getShippingAddress()
-					.getId();
-			Long cInfoId = department.getContactInfo() == null ? null : department.getContactInfo().getId();
-			Object[] args = new Object[] { department.getCompanyId(), department.getName(), bAddrId, sAddrId,
-					cInfoId, department.getModified(), department.getModifiedBy(), department.getId() };
-			count = jdbcTemplate.update(SQL_UPDATE, args);
-			LOG.debug("updated department, count = {}, id = {}", count, department.getId());
-		}
-
-		// if insert/update has 0 count value, then rollback
-		if (count <= 0) {
-			throw new RuntimeException("Department instance was not saved.");
-		}
-
-		// check if any dependent table entries need to be deleted
-		if (oldModel != null) {
-
-			// delete the old billing address entry (no longer in new model)
-			if (department.getBillingAddress() == null && oldModel.getBillingAddress() != null) {
-				addressDao.delete(oldModel.getBillingAddress().getId());
 			}
 
-			// check if shippingAddress key needs to be updated
-			if (department.getShippingAddress() == null && oldModel.getShippingAddress() != null) {
-				addressDao.delete(oldModel.getShippingAddress().getId());
+			// save contained objects in dependent tables
+			if (department.getBillingAddress() != null) {
+				if (oldModel != null && oldModel.getBillingAddress() != null) {
+					department.getBillingAddress().setId(oldModel.getBillingAddress().getId());
+				}
+				addressDao.save(department.getBillingAddress());
+			}
+			if (department.getShippingAddress() != null) {
+				if (oldModel != null && oldModel.getShippingAddress() != null) {
+					department.getShippingAddress().setId(oldModel.getShippingAddress().getId());
+				}
+				addressDao.save(department.getShippingAddress());
+			}
+			if (department.getContactInfo() != null) {
+				if (oldModel != null && oldModel.getContactInfo() != null) {
+					department.getContactInfo().setId(oldModel.getContactInfo().getId());
+				}
+				contactInfoDao.save(department.getContactInfo());
 			}
 
-			// delete the old contact info entry (no longer in new model)
-			if (department.getContactInfo() == null && oldModel.getContactInfo() != null) {
-				contactInfoDao.delete(oldModel.getContactInfo().getId());
+			int count = 0;
+			if (department.isNew()) {
+				// for new department, construct SQL insert statement
+				KeyHolder keyHolder = new GeneratedKeyHolder();
+				count = jdbcTemplate.update(new PreparedStatementCreator() {
+					public PreparedStatement createPreparedStatement(Connection connection)
+							throws SQLException {
+						PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
+								Statement.RETURN_GENERATED_KEYS);
+						pstmt.setLong(1, department.getCompanyId());
+						pstmt.setString(2, department.getName());
+						if (department.getBillingAddress() == null) {
+							pstmt.setNull(3, java.sql.Types.BIGINT);
+						} else {
+							pstmt.setLong(3, department.getBillingAddress().getId());
+						}
+						if (department.getShippingAddress() == null) {
+							pstmt.setNull(4, java.sql.Types.BIGINT);
+						} else {
+							pstmt.setLong(4, department.getShippingAddress().getId());
+						}
+						if (department.getContactInfo() == null) {
+							pstmt.setNull(5, java.sql.Types.BIGINT);
+						} else {
+							pstmt.setLong(5, department.getContactInfo().getId());
+						}
+						pstmt.setTimestamp(6, new Timestamp(department.getCreated().getTime()));
+						pstmt.setTimestamp(7, new Timestamp(department.getModified().getTime()));
+						pstmt.setString(8, department.getCreatedBy());
+						pstmt.setString(9, department.getModifiedBy());
+						return pstmt;
+					}
+				}, keyHolder);
+
+				// fetch the newly created auto-increment ID
+				department.setId(keyHolder.getKey().longValue());
+				LOG.debug("inserted department, count = {}, id = {}", count, department.getId());
+
+			} else {
+				// for existing department, construct SQL update statement
+				Long bAddrId = department.getBillingAddress() == null ? null : department.getBillingAddress()
+						.getId();
+				Long sAddrId = department.getShippingAddress() == null ? null : department
+						.getShippingAddress().getId();
+				Long cInfoId = department.getContactInfo() == null ? null : department.getContactInfo()
+						.getId();
+				Object[] args = new Object[] { department.getCompanyId(), department.getName(), bAddrId,
+						sAddrId, cInfoId, department.getModified(), department.getModifiedBy(),
+						department.getId() };
+				count = jdbcTemplate.update(SQL_UPDATE, args);
+				LOG.debug("updated department, count = {}, id = {}", count, department.getId());
 			}
+
+			// if insert/update has 0 count value, then rollback
+			if (count <= 0) {
+				throw new ObjectNotFoundException("Department with ID " + department.getId()
+						+ " was not found.");
+			}
+
+			// check if any dependent table entries need to be deleted
+			if (oldModel != null) {
+
+				// delete the old billing address entry (no longer in new model)
+				if (department.getBillingAddress() == null && oldModel.getBillingAddress() != null) {
+					addressDao.delete(oldModel.getBillingAddress().getId());
+				}
+
+				// check if shippingAddress key needs to be updated
+				if (department.getShippingAddress() == null && oldModel.getShippingAddress() != null) {
+					addressDao.delete(oldModel.getShippingAddress().getId());
+				}
+
+				// delete the old contact info entry (no longer in new model)
+				if (department.getContactInfo() == null && oldModel.getContactInfo() != null) {
+					contactInfoDao.delete(oldModel.getContactInfo().getId());
+				}
+			}
+		} catch (DataIntegrityViolationException dive) {
+			String msg = dive.getMessage();
+			if (msg != null) {
+				if (msg.contains("uq_department")) {
+					throw new DuplicateNameException("Duplicate department name " + department.getName(),
+							dive);
+				} else if (msg.contains("fk_department_compy")) {
+					throw new InvalidReferenceException("Invalid reference for attribute 'companyId'", dive);
+				} else if (msg.contains("fk_department_baddr")) {
+					throw new InvalidReferenceException("Invalid reference for attribute 'billingAddress'",
+							dive);
+				} else if (msg.contains("fk_department_saddr")) {
+					throw new InvalidReferenceException("Invalid reference for attribute 'shippingAddress'",
+							dive);
+				} else if (msg.contains("fk_department_cinfo")) {
+					throw new InvalidReferenceException("Invalid reference for attribute 'contactInfo'", dive);
+				}
+			}
+			throw dive;
 		}
 	}
 

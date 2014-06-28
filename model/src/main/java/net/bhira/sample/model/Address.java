@@ -25,10 +25,11 @@ package net.bhira.sample.model;
 
 import java.io.Serializable;
 
+import net.bhira.sample.common.exception.InvalidObjectException;
+
 /**
- * Generic address class that is used to track any kind of address.
- * It is a second class entity and is always contained within another 
- * entity like Company, Department or Employee.
+ * Generic address class that is used to track any kind of address. It is a second class entity and
+ * is always contained within another entity like Company, Department or Employee.
  * 
  * @author Baldeep Hira
  */
@@ -42,32 +43,46 @@ public class Address implements Serializable {
 	private String state;
 	private String zipcode;
 	private String country;
-	 
 
-	//-------------------------UTILITY METHODS----------------------------
-	
+	// -------------------------UTILITY METHODS----------------------------
+
 	/**
 	 * Check this model is a new instance.
+	 * 
 	 * @return true if the model is a new instance.
 	 */
 	public boolean isNew() {
 		return (id == 0);
 	}
 
-	
-	//-------------------------GETTERS AND SETTERS-------------------------
-	
+	/**
+	 * Check if this instance of Address is valid. It throws and exception with detailed message in
+	 * case of instance is invalid.
+	 * 
+	 * @throws InvalidObjectException
+	 *             if instance is invalid.
+	 */
+	public void validate() throws InvalidObjectException {
+		// all fields are optional in this class
+		// so validate never throws exception.
+	}
+
+	// -------------------------GETTERS AND SETTERS-------------------------
+
 	/**
 	 * Get the ID for the model.
+	 * 
 	 * @return the ID of the model.
 	 */
 	public long getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Set the ID for the model.
-	 * @param id the ID of the model.
+	 * 
+	 * @param id
+	 *            the ID of the model.
 	 */
 	public void setId(long id) {
 		this.id = id;
@@ -75,31 +90,37 @@ public class Address implements Serializable {
 
 	/**
 	 * Get the street name.
+	 * 
 	 * @return the name of the street.
 	 */
 	public String getStreet() {
 		return street;
 	}
-	
+
 	/**
 	 * Set the street name.
-	 * @param street the name of the street.
+	 * 
+	 * @param street
+	 *            the name of the street.
 	 */
 	public void setStreet(String street) {
 		this.street = street;
 	}
-	
+
 	/**
 	 * Get the city name.
+	 * 
 	 * @return the name of the city.
 	 */
 	public String getCity() {
 		return city;
 	}
-	
+
 	/**
 	 * Set the city name.
-	 * @param city the name of the city.
+	 * 
+	 * @param city
+	 *            the name of the city.
 	 */
 	public void setCity(String city) {
 		this.city = city;
@@ -107,47 +128,56 @@ public class Address implements Serializable {
 
 	/**
 	 * Get the name of the state or province.
+	 * 
 	 * @return the name of the state or province.
 	 */
 	public String getState() {
 		return state;
 	}
-	
+
 	/**
 	 * Set the name of the state or province.
-	 * @param state the name of the state or province.
+	 * 
+	 * @param state
+	 *            the name of the state or province.
 	 */
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+
 	/**
 	 * Get the zip or postal code.
+	 * 
 	 * @return the zip or postal code.
 	 */
 	public String getZipcode() {
 		return zipcode;
 	}
-	
+
 	/**
 	 * Set the zip or postal code.
-	 * @param zipcode the zip or postal code.
+	 * 
+	 * @param zipcode
+	 *            the zip or postal code.
 	 */
 	public void setZipcode(String zipcode) {
 		this.zipcode = zipcode;
 	}
-	
+
 	/**
 	 * Get the country name.
+	 * 
 	 * @return the name of the country.
 	 */
 	public String getCountry() {
 		return country;
 	}
-	
+
 	/**
 	 * Set the country name.
-	 * @param country the name of the country.
+	 * 
+	 * @param country
+	 *            the name of the country.
 	 */
 	public void setCountry(String country) {
 		this.country = country;

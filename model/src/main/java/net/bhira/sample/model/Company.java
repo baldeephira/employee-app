@@ -23,6 +23,8 @@
  */
 package net.bhira.sample.model;
 
+import net.bhira.sample.common.exception.InvalidObjectException;
+
 /**
  * This model captures the definition for a Company. It includes the company details
  * like name, address (both billing and shipping) and other contact properties like
@@ -47,6 +49,19 @@ public class Company extends BaseModel {
 	}
 	
 	
+	// -------------------------UTILITY METHODS----------------------------
+
+	/**
+	 * Check if this instance of Company is valid. It throws and exception with detailed message in
+	 * case of instance is invalid.
+	 * 
+	 * @throws InvalidObjectException
+	 *             if instance is invalid.
+	 */
+	public void validate() throws InvalidObjectException {
+		super.validate();
+	}
+
 	//-------------------------GETTERS AND SETTERS-------------------------
 	
 	/**

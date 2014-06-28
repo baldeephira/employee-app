@@ -25,6 +25,9 @@ package net.bhira.sample.api.service;
 
 import java.util.List;
 
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Company;
 
 /**
@@ -52,8 +55,15 @@ public interface CompanyService {
 	 * 
 	 * @param company
 	 *            an instance of {@link net.bhira.sample.model.Company}.
+	 * @throws ObjectNotFoundException
+	 *             if the company instance being saved is not found in repository.
+	 * @throws InvalidObjectException
+	 *             if the company instance being saved is invalid.
+	 * @throws InvalidReferenceException
+	 *             if the company instance being saved has invalid references.
 	 */
-	public void save(Company company);
+	public void save(Company company) throws ObjectNotFoundException, InvalidObjectException,
+			InvalidReferenceException;
 
 	/**
 	 * Delete the instance of {@link net.bhira.sample.model.Company} identified by given companyId.

@@ -62,10 +62,10 @@
 	<!-- define transactional advice for service classes -->
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
-			<tx:method name="get*" read-only="true"/>
-			<tx:method name="load*" read-only="true"/>
-			<tx:method name="fetch*" read-only="true"/>
-			<tx:method name="*" />
+			<tx:method name="get*" propagation="REQUIRED" no-rollback-for="Exception" read-only="true"/>
+			<tx:method name="load*" propagation="REQUIRED" no-rollback-for="Exception" read-only="true"/>
+			<tx:method name="fetch*" propagation="REQUIRED" no-rollback-for="Exception" read-only="true"/>
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception" />
 		</tx:attributes>
 	</tx:advice>
 

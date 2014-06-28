@@ -25,6 +25,9 @@ package net.bhira.sample.api.dao;
 
 import java.util.List;
 
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Employee;
 
 /**
@@ -54,8 +57,15 @@ public interface EmployeeDao {
 	 * 
 	 * @param employee
 	 *            an instance of {@link net.bhira.sample.model.Employee}.
+	 * @throws ObjectNotFoundException
+	 *             if the department instance being saved is not found in repository.
+	 * @throws InvalidObjectException
+	 *             if the department instance being saved is invalid.
+	 * @throws InvalidReferenceException
+	 *             if the department instance being saved has invalid references.
 	 */
-	public void save(Employee employee);
+	public void save(Employee employee) throws ObjectNotFoundException, InvalidObjectException,
+			InvalidReferenceException;
 
 	/**
 	 * Delete the instance of {@link net.bhira.sample.model.Employee} identified by given

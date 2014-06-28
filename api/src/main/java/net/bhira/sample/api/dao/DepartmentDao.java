@@ -25,6 +25,10 @@ package net.bhira.sample.api.dao;
 
 import java.util.List;
 
+import net.bhira.sample.common.exception.DuplicateNameException;
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Department;
 
 /**
@@ -41,11 +45,11 @@ public interface DepartmentDao {
 	 * Load {@link net.bhira.sample.model.Department} instance from repository identified by the
 	 * specified departmetId.
 	 * 
-	 * @param departmetId
+	 * @param departmentId
 	 *            the ID of {@link net.bhira.sample.model.Department}.
 	 * @return an instance of {@link net.bhira.sample.model.Department}.
 	 */
-	public Department load(long departmetId);
+	public Department load(long departmentId);
 
 	/**
 	 * Save the specified {@link net.bhira.sample.model.Department} to repository. It will take care
@@ -54,8 +58,17 @@ public interface DepartmentDao {
 	 * 
 	 * @param departmet
 	 *            an instance of {@link net.bhira.sample.model.Department}.
+	 * @throws ObjectNotFoundException
+	 *             if the department instance being saved is not found in repository.
+	 * @throws DuplicateNameException
+	 *             if the department name being used is duplicate and is already in use.
+	 * @throws InvalidObjectException
+	 *             if the department instance being saved is invalid.
+	 * @throws InvalidReferenceException
+	 *             if the department instance being saved has invalid references.
 	 */
-	public void save(Department departmet);
+	public void save(Department departmet) throws ObjectNotFoundException, DuplicateNameException,
+			InvalidObjectException, InvalidReferenceException;
 
 	/**
 	 * Delete the instance of {@link net.bhira.sample.model.Department} identified by given

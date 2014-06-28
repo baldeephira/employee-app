@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -42,6 +43,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import net.bhira.sample.api.jdbc.CompanyRowMapper;
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Company;
 
 /**
@@ -110,114 +114,131 @@ public class CompanyDaoImpl implements CompanyDao {
 	 * @see net.bhira.sample.api.dao.CompanyDao#save(net.bhira.sample.model.Company)
 	 */
 	@Override
-	public void save(Company company) {
-		if (company == null) {
-			return;
-		}
-
-		company.initForSave();
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-		// load old model, for cleaning dependent tables
-		Company oldModel = null;
-		if (!company.isNew()) {
-			List<Company> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { company.getId() },
-					new CompanyRowMapper());
-			if (list != null && !list.isEmpty()) {
-				oldModel = list.get(0);
+	public void save(Company company) throws ObjectNotFoundException, InvalidObjectException,
+			InvalidReferenceException {
+		try {
+			if (company == null) {
+				throw new InvalidObjectException("Company object is null.");
 			}
-		}
-
-		// save contained objects in dependent tables
-		if (company.getBillingAddress() != null) {
-			if (oldModel != null && oldModel.getBillingAddress() != null) {
-				company.getBillingAddress().setId(oldModel.getBillingAddress().getId());
-			}
-			addressDao.save(company.getBillingAddress());
-		}
-		if (company.getShippingAddress() != null) {
-			if (oldModel != null && oldModel.getShippingAddress() != null) {
-				company.getShippingAddress().setId(oldModel.getShippingAddress().getId());
-			}
-			addressDao.save(company.getShippingAddress());
-		}
-		if (company.getContactInfo() != null) {
-			if (oldModel != null && oldModel.getContactInfo() != null) {
-				company.getContactInfo().setId(oldModel.getContactInfo().getId());
-			}
-			contactInfoDao.save(company.getContactInfo());
-		}
-
-		int count = 0;
-		if (company.isNew()) {
-			// for new company, construct SQL insert statement
-			KeyHolder keyHolder = new GeneratedKeyHolder();
-			count = jdbcTemplate.update(new PreparedStatementCreator() {
-				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-					PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
-							Statement.RETURN_GENERATED_KEYS);
-					pstmt.setString(1, company.getName());
-					pstmt.setString(2, company.getIndustry());
-					if (company.getBillingAddress() == null) {
-						pstmt.setNull(3, java.sql.Types.BIGINT);
-					} else {
-						pstmt.setLong(3, company.getBillingAddress().getId());
-					}
-					if (company.getShippingAddress() == null) {
-						pstmt.setNull(4, java.sql.Types.BIGINT);
-					} else {
-						pstmt.setLong(4, company.getShippingAddress().getId());
-					}
-					if (company.getContactInfo() == null) {
-						pstmt.setNull(5, java.sql.Types.BIGINT);
-					} else {
-						pstmt.setLong(5, company.getContactInfo().getId());
-					}
-					pstmt.setTimestamp(6, new Timestamp(company.getCreated().getTime()));
-					pstmt.setTimestamp(7, new Timestamp(company.getModified().getTime()));
-					pstmt.setString(8, company.getCreatedBy());
-					pstmt.setString(9, company.getModifiedBy());
-					return pstmt;
+	
+			company.initForSave();
+			company.validate();
+			
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+	
+			// load old model, for cleaning dependent tables
+			Company oldModel = null;
+			if (!company.isNew()) {
+				List<Company> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { company.getId() },
+						new CompanyRowMapper());
+				if (list != null && !list.isEmpty()) {
+					oldModel = list.get(0);
 				}
-			}, keyHolder);
-
-			// fetch the newly created auto-increment ID
-			company.setId(keyHolder.getKey().longValue());
-			LOG.debug("inserted company, count = {}, id = {}", count, company.getId());
-
-		} else {
-			// for existing company, construct SQL update statement
-			Long bAddrId = company.getBillingAddress() == null ? null : company.getBillingAddress().getId();
-			Long sAddrId = company.getShippingAddress() == null ? null : company.getShippingAddress().getId();
-			Long cInfoId = company.getContactInfo() == null ? null : company.getContactInfo().getId();
-			Object[] args = new Object[] { company.getName(), company.getIndustry(), bAddrId, sAddrId,
-					cInfoId, company.getModified(), company.getModifiedBy(), company.getId() };
-			count = jdbcTemplate.update(SQL_UPDATE, args);
-			LOG.debug("updated company, count = {}, id = {}", count, company.getId());
-		}
-
-		// if insert/update has 0 count value, then rollback
-		if (count <= 0) {
-			throw new RuntimeException("Company instance was not saved.");
-		}
-
-		// check if any dependent table entries need to be deleted
-		if (oldModel != null) {
-
-			// delete the old billing address entry (no longer in new model)
-			if (company.getBillingAddress() == null && oldModel.getBillingAddress() != null) {
-				addressDao.delete(oldModel.getBillingAddress().getId());
 			}
-
-			// check if shippingAddress key needs to be updated
-			if (company.getShippingAddress() == null && oldModel.getShippingAddress() != null) {
-				addressDao.delete(oldModel.getShippingAddress().getId());
+	
+			// save contained objects in dependent tables
+			if (company.getBillingAddress() != null) {
+				if (oldModel != null && oldModel.getBillingAddress() != null) {
+					company.getBillingAddress().setId(oldModel.getBillingAddress().getId());
+				}
+				addressDao.save(company.getBillingAddress());
 			}
-
-			// delete the old contact info entry (no longer in new model)
-			if (company.getContactInfo() == null && oldModel.getContactInfo() != null) {
-				contactInfoDao.delete(oldModel.getContactInfo().getId());
+			if (company.getShippingAddress() != null) {
+				if (oldModel != null && oldModel.getShippingAddress() != null) {
+					company.getShippingAddress().setId(oldModel.getShippingAddress().getId());
+				}
+				addressDao.save(company.getShippingAddress());
 			}
+			if (company.getContactInfo() != null) {
+				if (oldModel != null && oldModel.getContactInfo() != null) {
+					company.getContactInfo().setId(oldModel.getContactInfo().getId());
+				}
+				contactInfoDao.save(company.getContactInfo());
+			}
+	
+			int count = 0;
+			if (company.isNew()) {
+				// for new company, construct SQL insert statement
+				KeyHolder keyHolder = new GeneratedKeyHolder();
+				count = jdbcTemplate.update(new PreparedStatementCreator() {
+					public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+						PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
+								Statement.RETURN_GENERATED_KEYS);
+						pstmt.setString(1, company.getName());
+						pstmt.setString(2, company.getIndustry());
+						if (company.getBillingAddress() == null) {
+							pstmt.setNull(3, java.sql.Types.BIGINT);
+						} else {
+							pstmt.setLong(3, company.getBillingAddress().getId());
+						}
+						if (company.getShippingAddress() == null) {
+							pstmt.setNull(4, java.sql.Types.BIGINT);
+						} else {
+							pstmt.setLong(4, company.getShippingAddress().getId());
+						}
+						if (company.getContactInfo() == null) {
+							pstmt.setNull(5, java.sql.Types.BIGINT);
+						} else {
+							pstmt.setLong(5, company.getContactInfo().getId());
+						}
+						pstmt.setTimestamp(6, new Timestamp(company.getCreated().getTime()));
+						pstmt.setTimestamp(7, new Timestamp(company.getModified().getTime()));
+						pstmt.setString(8, company.getCreatedBy());
+						pstmt.setString(9, company.getModifiedBy());
+						return pstmt;
+					}
+				}, keyHolder);
+	
+				// fetch the newly created auto-increment ID
+				company.setId(keyHolder.getKey().longValue());
+				LOG.debug("inserted company, count = {}, id = {}", count, company.getId());
+	
+			} else {
+				// for existing company, construct SQL update statement
+				Long bAddrId = company.getBillingAddress() == null ? null : company.getBillingAddress().getId();
+				Long sAddrId = company.getShippingAddress() == null ? null : company.getShippingAddress().getId();
+				Long cInfoId = company.getContactInfo() == null ? null : company.getContactInfo().getId();
+				Object[] args = new Object[] { company.getName(), company.getIndustry(), bAddrId, sAddrId,
+						cInfoId, company.getModified(), company.getModifiedBy(), company.getId() };
+				count = jdbcTemplate.update(SQL_UPDATE, args);
+				LOG.debug("updated company, count = {}, id = {}", count, company.getId());
+			}
+	
+			// if insert/update has 0 count value, then rollback
+			if (count <= 0) {
+				throw new ObjectNotFoundException("Company with ID "+company.getId()+" was not found.");
+			}
+	
+			// check if any dependent table entries need to be deleted
+			if (oldModel != null) {
+	
+				// delete the old billing address entry (no longer in new model)
+				if (company.getBillingAddress() == null && oldModel.getBillingAddress() != null) {
+					addressDao.delete(oldModel.getBillingAddress().getId());
+				}
+	
+				// check if shippingAddress key needs to be updated
+				if (company.getShippingAddress() == null && oldModel.getShippingAddress() != null) {
+					addressDao.delete(oldModel.getShippingAddress().getId());
+				}
+	
+				// delete the old contact info entry (no longer in new model)
+				if (company.getContactInfo() == null && oldModel.getContactInfo() != null) {
+					contactInfoDao.delete(oldModel.getContactInfo().getId());
+				}
+			}
+		} catch (DataIntegrityViolationException dive) {
+			String msg = dive.getMessage();
+			if (msg != null) {
+				if (msg.contains("fk_company_baddr")) {
+					throw new InvalidReferenceException("Invalid reference for attribute 'billingAddress'", dive);
+				} else if (msg.contains("fk_company_saddr")) {
+					throw new InvalidReferenceException("Invalid reference for attribute 'shippingAddress'", dive);
+				} else if (msg.contains("fk_company_cinfo")) {
+					throw new InvalidReferenceException("Invalid reference for attribute 'contactInfo'", dive);
+				}
+			}
+			throw dive;
 		}
 	}
 

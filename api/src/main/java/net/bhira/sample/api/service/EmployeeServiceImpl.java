@@ -29,6 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.bhira.sample.api.dao.EmployeeDao;
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Employee;
 
 /**
@@ -55,7 +58,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	 * @see net.bhira.sample.api.service.EmployeeService#save(net.bhira.sample.model.Employee)
 	 */
 	@Override
-	public void save(Employee employee) {
+	public void save(Employee employee) throws ObjectNotFoundException, InvalidObjectException,
+			InvalidReferenceException {
 		employeeDao.save(employee);
 	}
 

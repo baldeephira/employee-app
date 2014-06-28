@@ -13,8 +13,8 @@ configurations {
 }
 
 dependencies {
-	compile project(':model')
 	compile project(':common')
+	compile project(':model')
 	compile 'com.google.code.gson:gson:2.2.4'
 	compile 'org.springframework:spring-beans:4.0.5.RELEASE'
 	compile 'org.springframework:spring-core:4.0.5.RELEASE'

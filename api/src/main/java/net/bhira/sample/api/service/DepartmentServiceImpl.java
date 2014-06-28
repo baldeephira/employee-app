@@ -29,6 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.bhira.sample.api.dao.DepartmentDao;
+import net.bhira.sample.common.exception.DuplicateNameException;
+import net.bhira.sample.common.exception.InvalidObjectException;
+import net.bhira.sample.common.exception.InvalidReferenceException;
+import net.bhira.sample.common.exception.ObjectNotFoundException;
 import net.bhira.sample.model.Department;
 
 /**
@@ -55,7 +59,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 	 * @see net.bhira.sample.api.service.DepartmentService#save(net.bhira.sample.model.Department)
 	 */
 	@Override
-	public void save(Department department) {
+	public void save(Department department) throws ObjectNotFoundException, DuplicateNameException,
+			InvalidObjectException, InvalidReferenceException {
 		departmentDao.save(department);
 	}
 
