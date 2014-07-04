@@ -99,10 +99,12 @@ public class DepartmentDaoImpl implements DepartmentDao {
 		if (count > 0) {
 			Department department = list.get(0);
 			if (department.getBillingAddress() != null) {
-				department.setBillingAddress(addressDao.load(department.getBillingAddress().getId()));
+				department.setBillingAddress(addressDao
+						.load(department.getBillingAddress().getId()));
 			}
 			if (department.getShippingAddress() != null) {
-				department.setShippingAddress(addressDao.load(department.getShippingAddress().getId()));
+				department.setShippingAddress(addressDao.load(department.getShippingAddress()
+						.getId()));
 			}
 			if (department.getContactInfo() != null) {
 				department.setContactInfo(contactInfoDao.load(department.getContactInfo().getId()));
@@ -197,15 +199,15 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
 			} else {
 				// for existing department, construct SQL update statement
-				Long bAddrId = department.getBillingAddress() == null ? null : department.getBillingAddress()
-						.getId();
+				Long bAddrId = department.getBillingAddress() == null ? null : department
+						.getBillingAddress().getId();
 				Long sAddrId = department.getShippingAddress() == null ? null : department
 						.getShippingAddress().getId();
-				Long cInfoId = department.getContactInfo() == null ? null : department.getContactInfo()
-						.getId();
-				Object[] args = new Object[] { department.getCompanyId(), department.getName(), bAddrId,
-						sAddrId, cInfoId, department.getModified(), department.getModifiedBy(),
-						department.getId() };
+				Long cInfoId = department.getContactInfo() == null ? null : department
+						.getContactInfo().getId();
+				Object[] args = new Object[] { department.getCompanyId(), department.getName(),
+						bAddrId, sAddrId, cInfoId, department.getModified(),
+						department.getModifiedBy(), department.getId() };
 				count = jdbcTemplate.update(SQL_UPDATE, args);
 				LOG.debug("updated department, count = {}, id = {}", count, department.getId());
 			}
@@ -225,7 +227,8 @@ public class DepartmentDaoImpl implements DepartmentDao {
 				}
 
 				// check if shippingAddress key needs to be updated
-				if (department.getShippingAddress() == null && oldModel.getShippingAddress() != null) {
+				if (department.getShippingAddress() == null
+						&& oldModel.getShippingAddress() != null) {
 					addressDao.delete(oldModel.getShippingAddress().getId());
 				}
 
@@ -238,18 +241,20 @@ public class DepartmentDaoImpl implements DepartmentDao {
 			String msg = dive.getMessage();
 			if (msg != null) {
 				if (msg.contains("uq_department")) {
-					throw new DuplicateNameException("Duplicate department name " + department.getName(),
-							dive);
+					throw new DuplicateNameException("Duplicate department name "
+							+ department.getName(), dive);
 				} else if (msg.contains("fk_department_compy")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'companyId'", dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'companyId'", dive);
 				} else if (msg.contains("fk_department_baddr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'billingAddress'",
-							dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'billingAddress'", dive);
 				} else if (msg.contains("fk_department_saddr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'shippingAddress'",
-							dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'shippingAddress'", dive);
 				} else if (msg.contains("fk_department_cinfo")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'contactInfo'", dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'contactInfo'", dive);
 				}
 			}
 			throw dive;
@@ -264,8 +269,8 @@ public class DepartmentDaoImpl implements DepartmentDao {
 		int count = 0;
 
 		// load the existing department from database
-		List<Department> departments = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { departmentId },
-				new DepartmentRowMapper());
+		List<Department> departments = jdbcTemplate.query(SQL_LOAD_BY_ID,
+				new Object[] { departmentId }, new DepartmentRowMapper());
 
 		if (departments != null && !departments.isEmpty()) {
 			Department department = departments.get(0);

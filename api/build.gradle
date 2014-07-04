@@ -29,13 +29,7 @@ dependencies {
 	//we use jetty logging module, that already includes
 	//slf4j-api, hence we don't include this in the war
 	providedCompile 'org.slf4j:slf4j-api:1.7.7'
-
 	providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
-
-	//compile 'org.slf4j:slf4j-api:1.7.7'
-	//compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.0-rc1'
-	//compile 'org.apache.logging.log4j:log4j-api:2.0-rc1'
-	//compile 'org.apache.logging.log4j:log4j-core:2.0-rc1'
 
 	testCompile 'junit:junit:4.11'
 }

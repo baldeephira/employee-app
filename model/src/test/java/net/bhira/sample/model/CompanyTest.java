@@ -30,8 +30,7 @@ import java.util.Date;
 import org.junit.Test;
 
 /**
- * Test class for {@link net.bhira.sample.model.Company}.
- * It uses JUnit 4 for generating test cases.
+ * Test class for {@link net.bhira.sample.model.Company}. It uses JUnit 4 for generating test cases.
  * 
  * @author Baldeep Hira
  */
@@ -83,7 +82,8 @@ public class CompanyTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Company#setBillingAddress(net.bhira.sample.model.Address)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Company#setBillingAddress(net.bhira.sample.model.Address)}.
 	 */
 	@Test
 	public void testSetBillingAddress() {
@@ -115,7 +115,8 @@ public class CompanyTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Company#setShippingAddress(net.bhira.sample.model.Address)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Company#setShippingAddress(net.bhira.sample.model.Address)}.
 	 */
 	@Test
 	public void testSetShippingAddress() {
@@ -146,7 +147,8 @@ public class CompanyTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Company#setContactInfo(net.bhira.sample.model.ContactInfo)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Company#setContactInfo(net.bhira.sample.model.ContactInfo)}.
 	 */
 	@Test
 	public void testSetContactInfo() {

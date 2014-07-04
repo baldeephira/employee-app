@@ -95,7 +95,8 @@ public class AddressDaoImpl implements AddressDao {
 
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			int count = jdbcTemplate.update(new PreparedStatementCreator() {
-				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				public PreparedStatement createPreparedStatement(Connection connection)
+						throws SQLException {
 					PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
 							Statement.RETURN_GENERATED_KEYS);
 					pstmt.setString(1, address.getStreet());
@@ -113,9 +114,9 @@ public class AddressDaoImpl implements AddressDao {
 
 		} else {
 			// for existing address, construct the SQL update statement
-			int count = jdbcTemplate.update(SQL_UPDATE, new Object[] { address.getStreet(),
-					address.getCity(), address.getState(), address.getZipcode(), address.getCountry(),
-					address.getId() });
+			int count = jdbcTemplate.update(SQL_UPDATE,
+					new Object[] { address.getStreet(), address.getCity(), address.getState(),
+							address.getZipcode(), address.getCountry(), address.getId() });
 			LOG.debug("updated address, count = {},  id = {}", count, address.getId());
 		}
 	}

@@ -130,8 +130,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			// load old model, for cleaning dependent tables
 			Employee oldModel = null;
 			if (!employee.isNew()) {
-				List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { employee.getId() },
-						new EmployeeRowMapper());
+				List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_ID,
+						new Object[] { employee.getId() }, new EmployeeRowMapper());
 				if (list != null && !list.isEmpty()) {
 					oldModel = list.get(0);
 				}
@@ -173,9 +173,10 @@ public class EmployeeDaoImpl implements EmployeeDao {
 							pstmt.setLong(4, employee.getManagerId());
 						}
 						pstmt.setString(5, employee.getSalutation());
-						pstmt.setString(6, employee.getSex() == null ? null : employee.getSex().toString());
-						pstmt.setDate(7, employee.getDOB() == null ? null : new Date(employee.getDOB()
-								.getTime()));
+						pstmt.setString(6, employee.getSex() == null ? null : employee.getSex()
+								.toString());
+						pstmt.setDate(7, employee.getDOB() == null ? null : new Date(employee
+								.getDOB().getTime()));
 						pstmt.setString(8, employee.getTitle());
 						if (employee.getAddress() == null) {
 							pstmt.setNull(9, java.sql.Types.BIGINT);
@@ -206,17 +207,19 @@ public class EmployeeDaoImpl implements EmployeeDao {
 				String sex = employee.getSex() == null ? null : employee.getSex().toString();
 				Date dob = employee.getDOB() == null ? null : new Date(employee.getDOB().getTime());
 				Long bAddrId = employee.getAddress() == null ? null : employee.getAddress().getId();
-				Long cInfoId = employee.getContactInfo() == null ? null : employee.getContactInfo().getId();
-				Object[] args = new Object[] { employee.getCompanyId(), deptId, employee.getName(), mgrId,
-						employee.getSalutation(), sex, dob, employee.getTitle(), bAddrId, cInfoId,
-						employee.getModified(), employee.getModifiedBy(), employee.getId() };
+				Long cInfoId = employee.getContactInfo() == null ? null : employee.getContactInfo()
+						.getId();
+				Object[] args = new Object[] { employee.getCompanyId(), deptId, employee.getName(),
+						mgrId, employee.getSalutation(), sex, dob, employee.getTitle(), bAddrId,
+						cInfoId, employee.getModified(), employee.getModifiedBy(), employee.getId() };
 				count = jdbcTemplate.update(SQL_UPDATE, args);
 				LOG.debug("updated employee, count = {}, id = {}", count, employee.getId());
 			}
 
 			// if insert/update has 0 count value, then rollback
 			if (count <= 0) {
-				throw new ObjectNotFoundException("Employee with ID " + employee.getId() + " was not found.");
+				throw new ObjectNotFoundException("Employee with ID " + employee.getId()
+						+ " was not found.");
 			}
 
 			// check if any dependent table entries need to be deleted
@@ -236,16 +239,20 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			String msg = dive.getMessage();
 			if (msg != null) {
 				if (msg.contains("fk_employee_compy")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'companyId'", dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'companyId'", dive);
 				} else if (msg.contains("fk_employee_dept")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'departmentId'",
-							dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'departmentId'", dive);
 				} else if (msg.contains("fk_employee_mgr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'managerId'", dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'managerId'", dive);
 				} else if (msg.contains("fk_employee_addr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'address'", dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'address'", dive);
 				} else if (msg.contains("fk_employee_cinfo")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'contactInfo'", dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'contactInfo'", dive);
 				}
 			}
 			throw dive;
@@ -298,10 +305,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	 */
 	@Override
 	public List<Employee> loadByDepartment(long departmentId) {
-		List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_DEPARTMENT, new Object[] { departmentId },
-				new EmployeeRowMapper());
+		List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_DEPARTMENT,
+				new Object[] { departmentId }, new EmployeeRowMapper());
 		int count = (list == null) ? 0 : list.size();
-		LOG.debug("loaded employees by department, count = {}, departmentId = {}", count, departmentId);
+		LOG.debug("loaded employees by department, count = {}, departmentId = {}", count,
+				departmentId);
 		return list;
 	}
 

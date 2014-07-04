@@ -28,8 +28,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Test class for {@link net.bhira.sample.model.ContactInfo}.
- * It uses JUnit 4 for generating test cases.
+ * Test class for {@link net.bhira.sample.model.ContactInfo}. It uses JUnit 4 for generating test
+ * cases.
  * 
  * @author Baldeep Hira
  */

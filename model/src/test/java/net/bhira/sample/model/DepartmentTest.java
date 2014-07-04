@@ -30,8 +30,8 @@ import java.util.Date;
 import org.junit.Test;
 
 /**
- * Test class for {@link net.bhira.sample.model.Department}.
- * It uses JUnit 4 for generating test cases.
+ * Test class for {@link net.bhira.sample.model.Department}. It uses JUnit 4 for generating test
+ * cases.
  * 
  * @author Baldeep Hira
  */
@@ -83,7 +83,8 @@ public class DepartmentTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Department#setBillingAddress(net.bhira.sample.model.Address)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Department#setBillingAddress(net.bhira.sample.model.Address)}.
 	 */
 	@Test
 	public void testSetBillingAddress() {
@@ -115,7 +116,8 @@ public class DepartmentTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Department#setShippingAddress(net.bhira.sample.model.Address)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Department#setShippingAddress(net.bhira.sample.model.Address)}.
 	 */
 	@Test
 	public void testSetShippingAddress() {
@@ -146,7 +148,8 @@ public class DepartmentTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Department#setContactInfo(net.bhira.sample.model.ContactInfo)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Department#setContactInfo(net.bhira.sample.model.ContactInfo)}.
 	 */
 	@Test
 	public void testSetContactInfo() {
@@ -189,7 +192,7 @@ public class DepartmentTest {
 		assertNotNull(department.getCreated());
 		assertNotNull(department.getCreatedBy());
 	}
-	
+
 	/**
 	 * Test method for {@link net.bhira.sample.model.BaseModel#getId()}.
 	 */

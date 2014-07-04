@@ -31,8 +31,8 @@ import net.bhira.sample.model.Address;
 import org.springframework.jdbc.core.RowMapper;
 
 /**
- * Helper class used to map a single row in jdbc ResultSet to
- * {@link net.bhira.sample.model.Address} object. 
+ * Helper class used to map a single row in jdbc ResultSet to {@link net.bhira.sample.model.Address}
+ * object.
  * 
  * @author Baldeep Hira
  */
@@ -40,21 +40,23 @@ public class AddressRowMapper implements RowMapper<Address> {
 
 	/**
 	 * Constructor for AddressRowMapper that creates an instance of
-	 * {@link net.bhira.sample.model.Address} from row represented
-	 * by rowNum in the given ResultSet. 
-	 * @param rs an instance of ResultSet to be processed.
-	 * @param rowNum integer representing the row number in ResultSet.
+	 * {@link net.bhira.sample.model.Address} from row represented by rowNum in the given ResultSet.
+	 * 
+	 * @param rs
+	 *            an instance of ResultSet to be processed.
+	 * @param rowNum
+	 *            integer representing the row number in ResultSet.
 	 */
 	@Override
-    public Address mapRow(ResultSet rs, int rowNum) throws SQLException {
-    	Address address = new Address();
-    	address.setId(rs.getLong("id"));
-    	address.setStreet(rs.getString("street"));
-    	address.setCity(rs.getString("city"));
-    	address.setState(rs.getString("state"));
-    	address.setZipcode(rs.getString("zip"));
-    	address.setCountry(rs.getString("country"));
-        return address;
-    }
+	public Address mapRow(ResultSet rs, int rowNum) throws SQLException {
+		Address address = new Address();
+		address.setId(rs.getLong("id"));
+		address.setStreet(rs.getString("street"));
+		address.setCity(rs.getString("city"));
+		address.setState(rs.getString("state"));
+		address.setZipcode(rs.getString("zip"));
+		address.setCountry(rs.getString("country"));
+		return address;
+	}
 
 }

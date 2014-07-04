@@ -74,8 +74,8 @@ public class JsonUtil {
 		// create a custom de-serializer for dates
 		JsonDeserializer<Date> deserializer = new JsonDeserializer<Date>() {
 			@Override
-			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-					throws JsonParseException {
+			public Date deserialize(JsonElement json, Type typeOfT,
+					JsonDeserializationContext context) throws JsonParseException {
 				if (json == null) {
 					return null;
 				}

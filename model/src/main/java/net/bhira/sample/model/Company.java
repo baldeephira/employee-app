@@ -26,9 +26,8 @@ package net.bhira.sample.model;
 import net.bhira.sample.common.exception.InvalidObjectException;
 
 /**
- * This model captures the definition for a Company. It includes the company details
- * like name, address (both billing and shipping) and other contact properties like
- * phone, email and web site.
+ * This model captures the definition for a Company. It includes the company details like name,
+ * address (both billing and shipping) and other contact properties like phone, email and web site.
  * 
  * @author Baldeep Hira
  */
@@ -40,15 +39,14 @@ public class Company extends BaseModel {
 	private Address billingAddress;
 	private Address shippingAddress;
 	private ContactInfo contactInfo;
-	
+
 	/**
-	 * Default public constructor for Company. 
+	 * Default public constructor for Company.
 	 */
 	public Company() {
 		super();
 	}
-	
-	
+
 	// -------------------------UTILITY METHODS----------------------------
 
 	/**
@@ -62,51 +60,60 @@ public class Company extends BaseModel {
 		super.validate();
 	}
 
-	//-------------------------GETTERS AND SETTERS-------------------------
-	
+	// -------------------------GETTERS AND SETTERS-------------------------
+
 	/**
 	 * Get the industry category to which this company belongs.
+	 * 
 	 * @return the industry category to which this company belongs.
 	 */
 	public String getIndustry() {
 		return industry;
 	}
-	
+
 	/**
 	 * Set the industry category to which this company belongs.
-	 * @param industry the industry category to which this company belongs.
+	 * 
+	 * @param industry
+	 *            the industry category to which this company belongs.
 	 */
 	public void setIndustry(String industry) {
 		this.industry = industry;
 	}
-	
+
 	/**
 	 * Get the billing address for the company.
+	 * 
 	 * @return the billing address for the company.
 	 */
 	public Address getBillingAddress() {
 		return billingAddress;
 	}
-	
+
 	/**
 	 * Set the billing address for the company.
-	 * @param address the billing address for the company.
+	 * 
+	 * @param address
+	 *            the billing address for the company.
 	 */
 	public void setBillingAddress(Address address) {
 		billingAddress = address;
 	}
-	
+
 	/**
 	 * Get the shipping address for the company.
+	 * 
 	 * @return the shipping address for the company.
 	 */
 	public Address getShippingAddress() {
 		return shippingAddress;
 	}
-	
+
 	/**
 	 * Set the shipping address for the company.
-	 * @param address the shipping address for the company.
+	 * 
+	 * @param address
+	 *            the shipping address for the company.
 	 */
 	public void setShippingAddress(Address address) {
 		shippingAddress = address;
@@ -114,18 +121,21 @@ public class Company extends BaseModel {
 
 	/**
 	 * Get the contact information for the company.
+	 * 
 	 * @return the contact information for the company.
 	 */
 	public ContactInfo getContactInfo() {
 		return contactInfo;
 	}
-	
+
 	/**
 	 * Set the contact information for the company.
-	 * @param contactInfo the contact information for the company.
+	 * 
+	 * @param contactInfo
+	 *            the contact information for the company.
 	 */
 	public void setContactInfo(ContactInfo contactInfo) {
 		this.contactInfo = contactInfo;
 	}
-	
+
 }

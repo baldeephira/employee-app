@@ -32,7 +32,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 /**
  * Helper class used to map a single row in jdbc ResultSet to
- * {@link net.bhira.sample.model.ContactInfo} object. 
+ * {@link net.bhira.sample.model.ContactInfo} object.
  * 
  * @author Baldeep Hira
  */
@@ -40,20 +40,23 @@ public class ContactInfoRowMapper implements RowMapper<ContactInfo> {
 
 	/**
 	 * Constructor for ContactInfoRowMapper that creates an instance of
-	 * {@link net.bhira.sample.model.ContactInfo} from row represented
-	 * by rowNum in the given ResultSet. 
-	 * @param rs an instance of ResultSet to be processed.
-	 * @param rowNum integer representing the row number in ResultSet.
+	 * {@link net.bhira.sample.model.ContactInfo} from row represented by rowNum in the given
+	 * ResultSet.
+	 * 
+	 * @param rs
+	 *            an instance of ResultSet to be processed.
+	 * @param rowNum
+	 *            integer representing the row number in ResultSet.
 	 */
 	@Override
-    public ContactInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
-    	ContactInfo contactInfo = new ContactInfo();
-    	contactInfo.setId(rs.getLong("id"));
-    	contactInfo.setPhone(rs.getString("phone"));
-    	contactInfo.setFax(rs.getString("fax"));
-    	contactInfo.setEmail(rs.getString("email"));
-    	contactInfo.setWebsite(rs.getString("website"));
-        return contactInfo;
-    }
+	public ContactInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
+		ContactInfo contactInfo = new ContactInfo();
+		contactInfo.setId(rs.getLong("id"));
+		contactInfo.setPhone(rs.getString("phone"));
+		contactInfo.setFax(rs.getString("fax"));
+		contactInfo.setEmail(rs.getString("email"));
+		contactInfo.setWebsite(rs.getString("website"));
+		return contactInfo;
+	}
 
 }

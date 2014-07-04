@@ -129,8 +129,8 @@ public class CompanyDaoImpl implements CompanyDao {
 			// load old model, for cleaning dependent tables
 			Company oldModel = null;
 			if (!company.isNew()) {
-				List<Company> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { company.getId() },
-						new CompanyRowMapper());
+				List<Company> list = jdbcTemplate.query(SQL_LOAD_BY_ID,
+						new Object[] { company.getId() }, new CompanyRowMapper());
 				if (list != null && !list.isEmpty()) {
 					oldModel = list.get(0);
 				}
@@ -196,20 +196,23 @@ public class CompanyDaoImpl implements CompanyDao {
 
 			} else {
 				// for existing company, construct SQL update statement
-				Long bAddrId = company.getBillingAddress() == null ? null : company.getBillingAddress()
+				Long bAddrId = company.getBillingAddress() == null ? null : company
+						.getBillingAddress().getId();
+				Long sAddrId = company.getShippingAddress() == null ? null : company
+						.getShippingAddress().getId();
+				Long cInfoId = company.getContactInfo() == null ? null : company.getContactInfo()
 						.getId();
-				Long sAddrId = company.getShippingAddress() == null ? null : company.getShippingAddress()
-						.getId();
-				Long cInfoId = company.getContactInfo() == null ? null : company.getContactInfo().getId();
-				Object[] args = new Object[] { company.getName(), company.getIndustry(), bAddrId, sAddrId,
-						cInfoId, company.getModified(), company.getModifiedBy(), company.getId() };
+				Object[] args = new Object[] { company.getName(), company.getIndustry(), bAddrId,
+						sAddrId, cInfoId, company.getModified(), company.getModifiedBy(),
+						company.getId() };
 				count = jdbcTemplate.update(SQL_UPDATE, args);
 				LOG.debug("updated company, count = {}, id = {}", count, company.getId());
 			}
 
 			// if insert/update has 0 count value, then rollback
 			if (count <= 0) {
-				throw new ObjectNotFoundException("Company with ID " + company.getId() + " was not found.");
+				throw new ObjectNotFoundException("Company with ID " + company.getId()
+						+ " was not found.");
 			}
 
 			// check if any dependent table entries need to be deleted
@@ -234,13 +237,14 @@ public class CompanyDaoImpl implements CompanyDao {
 			String msg = dive.getMessage();
 			if (msg != null) {
 				if (msg.contains("fk_company_baddr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'billingAddress'",
-							dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'billingAddress'", dive);
 				} else if (msg.contains("fk_company_saddr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'shippingAddress'",
-							dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'shippingAddress'", dive);
 				} else if (msg.contains("fk_company_cinfo")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'contactInfo'", dive);
+					throw new InvalidReferenceException(
+							"Invalid reference for attribute 'contactInfo'", dive);
 				}
 			}
 			throw dive;

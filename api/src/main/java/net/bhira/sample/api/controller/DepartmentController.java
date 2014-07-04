@@ -74,7 +74,8 @@ public class DepartmentController {
 	 */
 	@RequestMapping(value = "/department/company/{companyId}", method = RequestMethod.GET)
 	@ResponseBody
-	public Callable<String> getDepartmentsByCompany(@PathVariable long companyId, HttpServletResponse response) {
+	public Callable<String> getDepartmentsByCompany(@PathVariable long companyId,
+			HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
 				String body = "";
@@ -107,7 +108,8 @@ public class DepartmentController {
 	 */
 	@RequestMapping(value = "/department/{departmentId}", method = RequestMethod.GET)
 	@ResponseBody
-	public Callable<String> getDepartment(@PathVariable long departmentId, HttpServletResponse response) {
+	public Callable<String> getDepartment(@PathVariable long departmentId,
+			HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
 				String body = "";
@@ -153,7 +155,7 @@ public class DepartmentController {
 					Department department = gson.fromJson(request.getReader(), Department.class);
 					LOG.debug("POST department received json = {}", gson.toJson(department));
 					departmentService.save(department);
-					HashMap<String,Long> map = new HashMap<String,Long>();
+					HashMap<String, Long> map = new HashMap<String, Long>();
 					map.put("id", department.getId());
 					body = gson.toJson(map);
 					LOG.debug("POST department/ successful with return ID = {}", department.getId());
@@ -184,7 +186,8 @@ public class DepartmentController {
 	 */
 	@RequestMapping(value = "/department/{departmentId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public Callable<String> deleteDepartment(@PathVariable long departmentId, HttpServletResponse response) {
+	public Callable<String> deleteDepartment(@PathVariable long departmentId,
+			HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
 				LOG.debug("servicing DELETE department/{}", departmentId);

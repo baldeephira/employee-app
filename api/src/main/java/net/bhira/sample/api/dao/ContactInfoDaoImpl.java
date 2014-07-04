@@ -94,7 +94,8 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			int count = jdbcTemplate.update(new PreparedStatementCreator() {
-				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				public PreparedStatement createPreparedStatement(Connection connection)
+						throws SQLException {
 					PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
 							Statement.RETURN_GENERATED_KEYS);
 					pstmt.setString(1, contactInfo.getPhone());
@@ -111,9 +112,9 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 
 		} else {
 			// for existing address, construct the SQL update statement
-			int count = jdbcTemplate.update(SQL_UPDATE,
-					new Object[] { contactInfo.getPhone(), contactInfo.getFax(), contactInfo.getEmail(),
-							contactInfo.getWebsite(), contactInfo.getId() });
+			int count = jdbcTemplate.update(SQL_UPDATE, new Object[] { contactInfo.getPhone(),
+					contactInfo.getFax(), contactInfo.getEmail(), contactInfo.getWebsite(),
+					contactInfo.getId() });
 			LOG.debug("updated contactInfo, count = {}, id = {}", count, contactInfo.getId());
 		}
 	}

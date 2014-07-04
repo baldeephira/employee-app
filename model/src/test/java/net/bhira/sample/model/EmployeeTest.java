@@ -30,8 +30,8 @@ import java.util.Date;
 import org.junit.Test;
 
 /**
- * Test class for {@link net.bhira.sample.model.Employee}.
- * It uses JUnit 4 for generating test cases.
+ * Test class for {@link net.bhira.sample.model.Employee}. It uses JUnit 4 for generating test
+ * cases.
  * 
  * @author Baldeep Hira
  */
@@ -137,7 +137,8 @@ public class EmployeeTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Employee#setSex(net.bhira.sample.model.Employee.Sex)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Employee#setSex(net.bhira.sample.model.Employee.Sex)}.
 	 */
 	@Test
 	public void testSetSex() {
@@ -205,7 +206,8 @@ public class EmployeeTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Employee#setAddress(net.bhira.sample.model.Address)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Employee#setAddress(net.bhira.sample.model.Address)}.
 	 */
 	@Test
 	public void testSetAddress() {
@@ -236,7 +238,8 @@ public class EmployeeTest {
 	}
 
 	/**
-	 * Test method for {@link net.bhira.sample.model.Employee#setContactInfo(net.bhira.sample.model.ContactInfo)}.
+	 * Test method for
+	 * {@link net.bhira.sample.model.Employee#setContactInfo(net.bhira.sample.model.ContactInfo)}.
 	 */
 	@Test
 	public void testSetContactInfo() {

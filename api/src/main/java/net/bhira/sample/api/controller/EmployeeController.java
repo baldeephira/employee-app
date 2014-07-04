@@ -74,7 +74,8 @@ public class EmployeeController {
 	 */
 	@RequestMapping(value = "/employee/company/{companyId}", method = RequestMethod.GET)
 	@ResponseBody
-	public Callable<String> getEmployeesByCompany(@PathVariable long companyId, HttpServletResponse response) {
+	public Callable<String> getEmployeesByCompany(@PathVariable long companyId,
+			HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
 				String body = "";
@@ -187,7 +188,7 @@ public class EmployeeController {
 					Employee employee = gson.fromJson(request.getReader(), Employee.class);
 					LOG.debug("POST employee received json = {}", gson.toJson(employee));
 					employeeService.save(employee);
-					HashMap<String,Long> map = new HashMap<String,Long>();
+					HashMap<String, Long> map = new HashMap<String, Long>();
 					map.put("id", employee.getId());
 					body = gson.toJson(map);
 					LOG.debug("POST employee/ successful with return ID = {}", employee.getId());
@@ -218,7 +219,8 @@ public class EmployeeController {
 	 */
 	@RequestMapping(value = "/employee/{employeeId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public Callable<String> deleteEmployee(@PathVariable long employeeId, HttpServletResponse response) {
+	public Callable<String> deleteEmployee(@PathVariable long employeeId,
+			HttpServletResponse response) {
 		return new Callable<String>() {
 			public String call() throws Exception {
 				LOG.debug("servicing DELETE employee/{}", employeeId);
