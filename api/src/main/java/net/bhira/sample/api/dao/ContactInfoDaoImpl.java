@@ -65,12 +65,14 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 	@Autowired
 	DataSource dataSource;
 
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+
 	/**
 	 * @see net.bhira.sample.api.dao.ContactInfoDao#load(long)
 	 */
 	@Override
 	public ContactInfo load(long contactInfoId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<ContactInfo> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { contactInfoId },
 				new ContactInfoRowMapper());
 		int count = (list == null) ? 0 : list.size();
@@ -87,7 +89,6 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 			return;
 		}
 
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		if (contactInfo.isNew()) {
 			// for new address, use SQL insert statement
 
@@ -122,7 +123,6 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 	 */
 	@Override
 	public boolean delete(long contactInfoId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		int count = jdbcTemplate.update(SQL_DELETE, new Object[] { contactInfoId });
 		LOG.debug("deleted contactInfo, count = {}, id = {}", count, contactInfoId);
 		return (count > 0);

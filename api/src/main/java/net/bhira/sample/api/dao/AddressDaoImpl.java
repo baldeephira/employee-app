@@ -65,12 +65,14 @@ public class AddressDaoImpl implements AddressDao {
 	@Autowired
 	DataSource dataSource;
 
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+
 	/**
 	 * @see net.bhira.sample.api.dao.AddressDao#load(long)
 	 */
 	@Override
 	public Address load(long addressId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Address> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { addressId },
 				new AddressRowMapper());
 		int count = (list == null) ? 0 : list.size();
@@ -88,7 +90,6 @@ public class AddressDaoImpl implements AddressDao {
 		}
 
 		boolean isNew = address.isNew();
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		if (isNew) {
 			// for new address, use SQL insert statement
 
@@ -124,7 +125,6 @@ public class AddressDaoImpl implements AddressDao {
 	 */
 	@Override
 	public boolean delete(long addressId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		int count = jdbcTemplate.update(SQL_DELETE, new Object[] { addressId });
 		LOG.debug("deleted address, count = {}, id = {}", count, addressId);
 		return (count > 0);

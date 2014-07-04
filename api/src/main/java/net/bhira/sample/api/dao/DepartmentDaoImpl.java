@@ -78,6 +78,9 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	DataSource dataSource;
 
 	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	@Autowired
 	AddressDao addressDao;
 
 	@Autowired
@@ -88,7 +91,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	 */
 	@Override
 	public Department load(long departmentId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Department> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { departmentId },
 				new DepartmentRowMapper());
 		int count = (list == null) ? 0 : list.size();
@@ -124,8 +126,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
 			department.initForSave();
 			department.validate();
-
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 			// load old model, for cleaning dependent tables
 			Department oldModel = null;
@@ -262,7 +262,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	@Override
 	public boolean delete(long departmentId) {
 		int count = 0;
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 		// load the existing department from database
 		List<Department> departments = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { departmentId },
@@ -294,7 +293,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	 */
 	@Override
 	public List<Department> loadByCompany(long companyId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Department> list = jdbcTemplate.query(SQL_LOAD_BY_COMPANY, new Object[] { companyId },
 				new DepartmentRowMapper());
 		int count = (list == null) ? 0 : list.size();

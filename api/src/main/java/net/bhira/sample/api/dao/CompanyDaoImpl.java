@@ -77,6 +77,9 @@ public class CompanyDaoImpl implements CompanyDao {
 	DataSource dataSource;
 
 	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	@Autowired
 	AddressDao addressDao;
 
 	@Autowired
@@ -87,7 +90,6 @@ public class CompanyDaoImpl implements CompanyDao {
 	 */
 	@Override
 	public Company load(long companyId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Company> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { companyId },
 				new CompanyRowMapper());
 		int count = (list == null) ? 0 : list.size();
@@ -120,12 +122,10 @@ public class CompanyDaoImpl implements CompanyDao {
 			if (company == null) {
 				throw new InvalidObjectException("Company object is null.");
 			}
-	
+
 			company.initForSave();
 			company.validate();
-			
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-	
+
 			// load old model, for cleaning dependent tables
 			Company oldModel = null;
 			if (!company.isNew()) {
@@ -135,7 +135,7 @@ public class CompanyDaoImpl implements CompanyDao {
 					oldModel = list.get(0);
 				}
 			}
-	
+
 			// save contained objects in dependent tables
 			if (company.getBillingAddress() != null) {
 				if (oldModel != null && oldModel.getBillingAddress() != null) {
@@ -155,13 +155,14 @@ public class CompanyDaoImpl implements CompanyDao {
 				}
 				contactInfoDao.save(company.getContactInfo());
 			}
-	
+
 			int count = 0;
 			if (company.isNew()) {
 				// for new company, construct SQL insert statement
 				KeyHolder keyHolder = new GeneratedKeyHolder();
 				count = jdbcTemplate.update(new PreparedStatementCreator() {
-					public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					public PreparedStatement createPreparedStatement(Connection connection)
+							throws SQLException {
 						PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
 								Statement.RETURN_GENERATED_KEYS);
 						pstmt.setString(1, company.getName());
@@ -188,40 +189,42 @@ public class CompanyDaoImpl implements CompanyDao {
 						return pstmt;
 					}
 				}, keyHolder);
-	
+
 				// fetch the newly created auto-increment ID
 				company.setId(keyHolder.getKey().longValue());
 				LOG.debug("inserted company, count = {}, id = {}", count, company.getId());
-	
+
 			} else {
 				// for existing company, construct SQL update statement
-				Long bAddrId = company.getBillingAddress() == null ? null : company.getBillingAddress().getId();
-				Long sAddrId = company.getShippingAddress() == null ? null : company.getShippingAddress().getId();
+				Long bAddrId = company.getBillingAddress() == null ? null : company.getBillingAddress()
+						.getId();
+				Long sAddrId = company.getShippingAddress() == null ? null : company.getShippingAddress()
+						.getId();
 				Long cInfoId = company.getContactInfo() == null ? null : company.getContactInfo().getId();
 				Object[] args = new Object[] { company.getName(), company.getIndustry(), bAddrId, sAddrId,
 						cInfoId, company.getModified(), company.getModifiedBy(), company.getId() };
 				count = jdbcTemplate.update(SQL_UPDATE, args);
 				LOG.debug("updated company, count = {}, id = {}", count, company.getId());
 			}
-	
+
 			// if insert/update has 0 count value, then rollback
 			if (count <= 0) {
-				throw new ObjectNotFoundException("Company with ID "+company.getId()+" was not found.");
+				throw new ObjectNotFoundException("Company with ID " + company.getId() + " was not found.");
 			}
-	
+
 			// check if any dependent table entries need to be deleted
 			if (oldModel != null) {
-	
+
 				// delete the old billing address entry (no longer in new model)
 				if (company.getBillingAddress() == null && oldModel.getBillingAddress() != null) {
 					addressDao.delete(oldModel.getBillingAddress().getId());
 				}
-	
+
 				// check if shippingAddress key needs to be updated
 				if (company.getShippingAddress() == null && oldModel.getShippingAddress() != null) {
 					addressDao.delete(oldModel.getShippingAddress().getId());
 				}
-	
+
 				// delete the old contact info entry (no longer in new model)
 				if (company.getContactInfo() == null && oldModel.getContactInfo() != null) {
 					contactInfoDao.delete(oldModel.getContactInfo().getId());
@@ -231,9 +234,11 @@ public class CompanyDaoImpl implements CompanyDao {
 			String msg = dive.getMessage();
 			if (msg != null) {
 				if (msg.contains("fk_company_baddr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'billingAddress'", dive);
+					throw new InvalidReferenceException("Invalid reference for attribute 'billingAddress'",
+							dive);
 				} else if (msg.contains("fk_company_saddr")) {
-					throw new InvalidReferenceException("Invalid reference for attribute 'shippingAddress'", dive);
+					throw new InvalidReferenceException("Invalid reference for attribute 'shippingAddress'",
+							dive);
 				} else if (msg.contains("fk_company_cinfo")) {
 					throw new InvalidReferenceException("Invalid reference for attribute 'contactInfo'", dive);
 				}
@@ -248,7 +253,6 @@ public class CompanyDaoImpl implements CompanyDao {
 	@Override
 	public boolean delete(long companyId) {
 		int count = 0;
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 		// load the existing company from database
 		List<Company> companies = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { companyId },
@@ -280,7 +284,6 @@ public class CompanyDaoImpl implements CompanyDao {
 	 */
 	@Override
 	public List<Company> loadAll() {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Company> list = jdbcTemplate.query(SQL_LOAD_ALL, new CompanyRowMapper());
 		int count = (list == null) ? 0 : list.size();
 		LOG.debug("loaded all companies, count = {}", count);

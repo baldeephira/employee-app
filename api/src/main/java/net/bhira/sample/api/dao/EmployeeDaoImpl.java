@@ -81,6 +81,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	DataSource dataSource;
 
 	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	@Autowired
 	AddressDao addressDao;
 
 	@Autowired
@@ -91,7 +94,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	 */
 	@Override
 	public Employee load(long employeeId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { employeeId },
 				new EmployeeRowMapper());
 		int count = (list == null) ? 0 : list.size();
@@ -124,8 +126,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 			employee.initForSave();
 			employee.validate();
-
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 			// load old model, for cleaning dependent tables
 			Employee oldModel = null;
@@ -258,7 +258,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	@Override
 	public boolean delete(long employeeId) {
 		int count = 0;
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 		// load the existing employee from database
 		List<Employee> employees = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { employeeId },
@@ -287,7 +286,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	 */
 	@Override
 	public List<Employee> loadByCompany(long companyId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_COMPANY, new Object[] { companyId },
 				new EmployeeRowMapper());
 		int count = (list == null) ? 0 : list.size();
@@ -300,7 +298,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	 */
 	@Override
 	public List<Employee> loadByDepartment(long departmentId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_DEPARTMENT, new Object[] { departmentId },
 				new EmployeeRowMapper());
 		int count = (list == null) ? 0 : list.size();
