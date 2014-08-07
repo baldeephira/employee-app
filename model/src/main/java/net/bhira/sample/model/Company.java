@@ -36,8 +36,8 @@ public class Company extends BaseModel {
 	private static final long serialVersionUID = 20140520L;
 
 	private String industry;
-	private Address billingAddress;
-	private Address shippingAddress;
+	private String billingAddress;
+	private String shippingAddress;
 	private ContactInfo contactInfo;
 
 	/**
@@ -86,7 +86,7 @@ public class Company extends BaseModel {
 	 * 
 	 * @return the billing address for the company.
 	 */
-	public Address getBillingAddress() {
+	public String getBillingAddress() {
 		return billingAddress;
 	}
 
@@ -96,7 +96,7 @@ public class Company extends BaseModel {
 	 * @param address
 	 *            the billing address for the company.
 	 */
-	public void setBillingAddress(Address address) {
+	public void setBillingAddress(String address) {
 		billingAddress = address;
 	}
 
@@ -105,7 +105,7 @@ public class Company extends BaseModel {
 	 * 
 	 * @return the shipping address for the company.
 	 */
-	public Address getShippingAddress() {
+	public String getShippingAddress() {
 		return shippingAddress;
 	}
 
@@ -115,7 +115,7 @@ public class Company extends BaseModel {
 	 * @param address
 	 *            the shipping address for the company.
 	 */
-	public void setShippingAddress(Address address) {
+	public void setShippingAddress(String address) {
 		shippingAddress = address;
 	}
 

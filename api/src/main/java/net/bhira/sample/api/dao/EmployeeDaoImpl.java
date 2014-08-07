@@ -70,21 +70,21 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	private static final String SQL_LOAD_BY_DEPARTMENT = "select * from employee where departmentid = ?";
 	private static final String SQL_INSERT = "insert into employee"
 			+ " (companyid, departmentid, name, managerid, salutation, sex, dob,"
-			+ "  title, addr, contactinfo, created, modified, createdby, modifiedby)"
-			+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			+ "  title, addr, created, modified, createdby, modifiedby)"
+			+ " values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static final String SQL_UPDATE = "update employee set companyid = ?, departmentid = ?, name = ?, "
 			+ "managerid = ?, salutation = ?, sex = ?, dob = ?, title = ?, addr = ?, "
-			+ "contactinfo = ?, modified = ?, modifiedby = ? where id = ?";
+			+ "modified = ?, modifiedby = ? where id = ?";
 	private static final String SQL_DELETE = "delete from employee where id = ?";
+	private static final String SQL_CINFO_REL_LOAD = "select contactinfoid from employee_cinfo where employeeid = ?";
+	private static final String SQL_CINFO_REL_INSERT = "insert into employee_cinfo (employeeid, contactinfoid) values (?,?)";
+	private static final String SQL_CINFO_REL_DELETE = "delete from employee_cinfo where employeeid = ?";
 
 	@Autowired
 	DataSource dataSource;
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-
-	@Autowired
-	AddressDao addressDao;
 
 	@Autowired
 	ContactInfoDao contactInfoDao;
@@ -101,11 +101,10 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 		if (count > 0) {
 			Employee employee = list.get(0);
-			if (employee.getAddress() != null) {
-				employee.setAddress(addressDao.load(employee.getAddress().getId()));
-			}
-			if (employee.getContactInfo() != null) {
-				employee.setContactInfo(contactInfoDao.load(employee.getContactInfo().getId()));
+			List<Long> cinfoIds = jdbcTemplate.queryForList(SQL_CINFO_REL_LOAD, Long.class,
+					new Object[] { employeeId });
+			if (cinfoIds != null && !cinfoIds.isEmpty()) {
+				employee.setContactInfo(contactInfoDao.load(cinfoIds.get(0)));
 			}
 			return employee;
 		} else {
@@ -126,33 +125,10 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 			employee.initForSave();
 			employee.validate();
-
-			// load old model, for cleaning dependent tables
-			Employee oldModel = null;
-			if (!employee.isNew()) {
-				List<Employee> list = jdbcTemplate.query(SQL_LOAD_BY_ID,
-						new Object[] { employee.getId() }, new EmployeeRowMapper());
-				if (list != null && !list.isEmpty()) {
-					oldModel = list.get(0);
-				}
-			}
-
-			// save contained objects in dependent tables
-			if (employee.getAddress() != null) {
-				if (oldModel != null && oldModel.getAddress() != null) {
-					employee.getAddress().setId(oldModel.getAddress().getId());
-				}
-				addressDao.save(employee.getAddress());
-			}
-			if (employee.getContactInfo() != null) {
-				if (oldModel != null && oldModel.getContactInfo() != null) {
-					employee.getContactInfo().setId(oldModel.getContactInfo().getId());
-				}
-				contactInfoDao.save(employee.getContactInfo());
-			}
-
+			boolean isNew = employee.isNew();
 			int count = 0;
-			if (employee.isNew()) {
+
+			if (isNew) {
 				// for new employee, construct SQL insert statement
 				KeyHolder keyHolder = new GeneratedKeyHolder();
 				count = jdbcTemplate.update(new PreparedStatementCreator() {
@@ -178,20 +154,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
 						pstmt.setDate(7, employee.getDOB() == null ? null : new Date(employee
 								.getDOB().getTime()));
 						pstmt.setString(8, employee.getTitle());
-						if (employee.getAddress() == null) {
-							pstmt.setNull(9, java.sql.Types.BIGINT);
-						} else {
-							pstmt.setLong(9, employee.getAddress().getId());
-						}
-						if (employee.getContactInfo() == null) {
-							pstmt.setNull(10, java.sql.Types.BIGINT);
-						} else {
-							pstmt.setLong(10, employee.getContactInfo().getId());
-						}
-						pstmt.setTimestamp(11, new Timestamp(employee.getCreated().getTime()));
-						pstmt.setTimestamp(12, new Timestamp(employee.getModified().getTime()));
-						pstmt.setString(13, employee.getCreatedBy());
-						pstmt.setString(14, employee.getModifiedBy());
+						pstmt.setString(9, employee.getAddress());
+						pstmt.setTimestamp(10, new Timestamp(employee.getCreated().getTime()));
+						pstmt.setTimestamp(11, new Timestamp(employee.getModified().getTime()));
+						pstmt.setString(12, employee.getCreatedBy());
+						pstmt.setString(13, employee.getModifiedBy());
 						return pstmt;
 					}
 				}, keyHolder);
@@ -206,12 +173,10 @@ public class EmployeeDaoImpl implements EmployeeDao {
 				Long mgrId = employee.getManagerId() == 0 ? null : employee.getManagerId();
 				String sex = employee.getSex() == null ? null : employee.getSex().toString();
 				Date dob = employee.getDOB() == null ? null : new Date(employee.getDOB().getTime());
-				Long bAddrId = employee.getAddress() == null ? null : employee.getAddress().getId();
-				Long cInfoId = employee.getContactInfo() == null ? null : employee.getContactInfo()
-						.getId();
 				Object[] args = new Object[] { employee.getCompanyId(), deptId, employee.getName(),
-						mgrId, employee.getSalutation(), sex, dob, employee.getTitle(), bAddrId,
-						cInfoId, employee.getModified(), employee.getModifiedBy(), employee.getId() };
+						mgrId, employee.getSalutation(), sex, dob, employee.getTitle(),
+						employee.getAddress(), employee.getModified(), employee.getModifiedBy(),
+						employee.getId() };
 				count = jdbcTemplate.update(SQL_UPDATE, args);
 				LOG.debug("updated employee, count = {}, id = {}", count, employee.getId());
 			}
@@ -222,19 +187,46 @@ public class EmployeeDaoImpl implements EmployeeDao {
 						+ " was not found.");
 			}
 
-			// check if any dependent table entries need to be deleted
-			if (oldModel != null) {
+			// update dependent entries, as needed
+			if (isNew) {
 
-				// delete the old address entry (no longer in new model)
-				if (employee.getAddress() == null && oldModel.getAddress() != null) {
-					addressDao.delete(oldModel.getAddress().getId());
+				// for new model if there is contact info, save it to contact info table and then
+				// add entry in relationship table
+				if (employee.getContactInfo() != null) {
+					contactInfoDao.save(employee.getContactInfo());
+					Object[] args = new Object[] { employee.getId(),
+							employee.getContactInfo().getId() };
+					jdbcTemplate.update(SQL_CINFO_REL_INSERT, args);
 				}
 
-				// delete the old contact info entry (no longer in new model)
-				if (employee.getContactInfo() == null && oldModel.getContactInfo() != null) {
-					contactInfoDao.delete(oldModel.getContactInfo().getId());
+			} else {
+				// for existing model, fetch contact info ID from relationship table
+				List<Long> cinfoIds = jdbcTemplate.queryForList(SQL_CINFO_REL_LOAD, Long.class,
+						new Object[] { employee.getId() });
+				Long cinfoId = (cinfoIds != null && !cinfoIds.isEmpty()) ? cinfoIds.get(0) : null;
+
+				if (employee.getContactInfo() == null) {
+					// clean up old contact info entry, if needed
+					if (cinfoId != null) {
+						jdbcTemplate
+								.update(SQL_CINFO_REL_DELETE, new Object[] { employee.getId() });
+						contactInfoDao.delete(cinfoId);
+					}
+
+				} else {
+					// insert/update contact info entry
+					if (cinfoId != null) {
+						employee.getContactInfo().setId(cinfoId);
+						contactInfoDao.save(employee.getContactInfo());
+					} else {
+						contactInfoDao.save(employee.getContactInfo());
+						Object[] args = new Object[] { employee.getId(),
+								employee.getContactInfo().getId() };
+						jdbcTemplate.update(SQL_CINFO_REL_INSERT, args);
+					}
 				}
 			}
+
 		} catch (DataIntegrityViolationException dive) {
 			String msg = dive.getMessage();
 			if (msg != null) {
@@ -247,12 +239,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 				} else if (msg.contains("fk_employee_mgr")) {
 					throw new InvalidReferenceException(
 							"Invalid reference for attribute 'managerId'", dive);
-				} else if (msg.contains("fk_employee_addr")) {
-					throw new InvalidReferenceException(
-							"Invalid reference for attribute 'address'", dive);
-				} else if (msg.contains("fk_employee_cinfo")) {
-					throw new InvalidReferenceException(
-							"Invalid reference for attribute 'contactInfo'", dive);
 				}
 			}
 			throw dive;
@@ -264,27 +250,22 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	 */
 	@Override
 	public boolean delete(long employeeId) {
-		int count = 0;
+		
+		// load ID from contact info relationship table
+		List<Long> cinfoIds = jdbcTemplate.queryForList(SQL_CINFO_REL_LOAD, Long.class,
+				new Object[] { employeeId });
+		Long cinfoId = (cinfoIds != null && !cinfoIds.isEmpty()) ? cinfoIds.get(0) : null;
 
-		// load the existing employee from database
-		List<Employee> employees = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { employeeId },
-				new EmployeeRowMapper());
-
-		if (employees != null && !employees.isEmpty()) {
-			Employee employee = employees.get(0);
-
-			// delete the row from employee table
-			count = jdbcTemplate.update(SQL_DELETE, new Object[] { employeeId });
-			LOG.debug("deleted employee, count = {}, id = {}", count, employeeId);
-
-			// delete all rows from dependent tables
-			if (employee.getAddress() != null) {
-				addressDao.delete(employee.getAddress().getId());
-			}
-			if (employee.getContactInfo() != null) {
-				contactInfoDao.delete(employee.getContactInfo().getId());
-			}
+		// delete relationship entry & contact info entry, if needed
+		if (cinfoId != null) {
+			jdbcTemplate.update(SQL_CINFO_REL_DELETE, new Object[] { employeeId });
+			contactInfoDao.delete(cinfoId);
 		}
+
+		// delete the row from employee table
+		int count = jdbcTemplate.update(SQL_DELETE, new Object[] { employeeId });
+		LOG.debug("deleted employee, count = {}, id = {}", count, employeeId);
+
 		return (count > 0);
 	}
 

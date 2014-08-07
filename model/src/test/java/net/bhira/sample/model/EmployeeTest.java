@@ -195,14 +195,8 @@ public class EmployeeTest {
 	@Test
 	public void testGetAddress() {
 		Employee employee = new Employee();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		employee.setAddress(address);
-		assertEquals(address, employee.getAddress());
+		employee.setAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", employee.getAddress());
 	}
 
 	/**
@@ -212,14 +206,8 @@ public class EmployeeTest {
 	@Test
 	public void testSetAddress() {
 		Employee employee = new Employee();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		employee.setAddress(address);
-		assertEquals(address, employee.getAddress());
+		employee.setAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", employee.getAddress());
 	}
 
 	/**

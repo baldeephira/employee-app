@@ -80,17 +80,19 @@ public abstract class BaseModel implements Serializable {
 		if (name == null || name.trim().length() == 0) {
 			throw new InvalidObjectException("The required attribute 'name' is missing.");
 		}
-		if (created == null) {
-			throw new InvalidObjectException("The required attribute 'created' is missing.");
-		}
 		if (modified == null) {
 			throw new InvalidObjectException("The required attribute 'modified' is missing.");
 		}
-		if (createdBy == null || createdBy.trim().length() == 0) {
-			throw new InvalidObjectException("The required attribute 'createdBy' is missing.");
-		}
 		if (modifiedBy == null || modifiedBy.trim().length() == 0) {
 			throw new InvalidObjectException("The required attribute 'modifiedBy' is missing.");
+		}
+		if (isNew()) {
+			if (created == null) {
+				throw new InvalidObjectException("The required attribute 'created' is missing.");
+			}
+			if (createdBy == null || createdBy.trim().length() == 0) {
+				throw new InvalidObjectException("The required attribute 'createdBy' is missing.");
+			}
 		}
 	}
 

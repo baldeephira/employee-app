@@ -37,8 +37,8 @@ public class Department extends BaseModel {
 	private static final long serialVersionUID = 20140520L;
 
 	private long companyId;
-	private Address billingAddress;
-	private Address shippingAddress;
+	private String billingAddress;
+	private String shippingAddress;
 	private ContactInfo contactInfo;
 
 	/**
@@ -90,7 +90,7 @@ public class Department extends BaseModel {
 	 * 
 	 * @return the billing address for the department.
 	 */
-	public Address getBillingAddress() {
+	public String getBillingAddress() {
 		return billingAddress;
 	}
 
@@ -100,7 +100,7 @@ public class Department extends BaseModel {
 	 * @param address
 	 *            the billing address for the department.
 	 */
-	public void setBillingAddress(Address address) {
+	public void setBillingAddress(String address) {
 		billingAddress = address;
 	}
 
@@ -109,7 +109,7 @@ public class Department extends BaseModel {
 	 * 
 	 * @return the shipping address for the department.
 	 */
-	public Address getShippingAddress() {
+	public String getShippingAddress() {
 		return shippingAddress;
 	}
 
@@ -119,7 +119,7 @@ public class Department extends BaseModel {
 	 * @param address
 	 *            the shipping address for the department.
 	 */
-	public void setShippingAddress(Address address) {
+	public void setShippingAddress(String address) {
 		shippingAddress = address;
 	}
 

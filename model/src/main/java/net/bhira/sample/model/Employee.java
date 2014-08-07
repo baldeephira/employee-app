@@ -50,7 +50,7 @@ public class Employee extends BaseModel {
 	private Sex sex;
 	private Date dob;
 	private String title;
-	private Address address;
+	private String address;
 	private ContactInfo contactInfo;
 
 	/**
@@ -216,7 +216,7 @@ public class Employee extends BaseModel {
 	 * 
 	 * @return the address for the employee.
 	 */
-	public Address getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
@@ -226,7 +226,7 @@ public class Employee extends BaseModel {
 	 * @param address
 	 *            the address for the employee.
 	 */
-	public void setAddress(Address address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 

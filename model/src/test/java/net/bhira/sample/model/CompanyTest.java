@@ -71,14 +71,8 @@ public class CompanyTest {
 	@Test
 	public void testGetBillingAddress() {
 		Company company = new Company();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		company.setBillingAddress(address);
-		assertEquals(address, company.getBillingAddress());
+		company.setBillingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", company.getBillingAddress());
 	}
 
 	/**
@@ -88,14 +82,8 @@ public class CompanyTest {
 	@Test
 	public void testSetBillingAddress() {
 		Company company = new Company();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		company.setBillingAddress(address);
-		assertEquals(address, company.getBillingAddress());
+		company.setBillingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", company.getBillingAddress());
 	}
 
 	/**
@@ -104,14 +92,8 @@ public class CompanyTest {
 	@Test
 	public void testGetShippingAddress() {
 		Company company = new Company();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		company.setShippingAddress(address);
-		assertEquals(address, company.getShippingAddress());
+		company.setShippingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", company.getShippingAddress());
 	}
 
 	/**
@@ -121,14 +103,8 @@ public class CompanyTest {
 	@Test
 	public void testSetShippingAddress() {
 		Company company = new Company();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		company.setShippingAddress(address);
-		assertEquals(address, company.getShippingAddress());
+		company.setShippingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", company.getShippingAddress());
 	}
 
 	/**

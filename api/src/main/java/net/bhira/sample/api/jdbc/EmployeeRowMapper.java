@@ -28,9 +28,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import net.bhira.sample.model.Address;
 import net.bhira.sample.model.Employee;
-import net.bhira.sample.model.ContactInfo;
 
 /**
  * Helper class used to map a single row in jdbc ResultSet to
@@ -67,20 +65,7 @@ public class EmployeeRowMapper implements RowMapper<Employee> {
 			employee.setSex(Employee.Sex.valueOf(sex));
 		}
 
-		long addrId = rs.getLong("addr");
-		if (addrId > 0) {
-			Address address = new Address();
-			address.setId(addrId);
-			employee.setAddress(address);
-		}
-
-		long contactInfoId = rs.getLong("contactinfo");
-		if (contactInfoId > 0) {
-			ContactInfo contactInfo = new ContactInfo();
-			contactInfo.setId(contactInfoId);
-			employee.setContactInfo(contactInfo);
-		}
-
+		employee.setAddress(rs.getString("addr"));
 		employee.setCreated(rs.getTimestamp("created"));
 		employee.setModified(rs.getTimestamp("modified"));
 		employee.setCreatedBy(rs.getString("createdby"));

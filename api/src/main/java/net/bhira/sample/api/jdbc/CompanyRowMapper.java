@@ -28,9 +28,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import net.bhira.sample.model.Address;
 import net.bhira.sample.model.Company;
-import net.bhira.sample.model.ContactInfo;
 
 /**
  * Helper class used to map a single row in jdbc ResultSet to {@link net.bhira.sample.model.Company}
@@ -55,28 +53,8 @@ public class CompanyRowMapper implements RowMapper<Company> {
 		company.setId(rs.getLong("id"));
 		company.setName(rs.getString("name"));
 		company.setIndustry(rs.getString("industry"));
-
-		long billingAddressId = rs.getLong("billingaddr");
-		if (billingAddressId > 0) {
-			Address address = new Address();
-			address.setId(billingAddressId);
-			company.setBillingAddress(address);
-		}
-
-		long shippingAddressId = rs.getLong("shippingaddr");
-		if (shippingAddressId > 0) {
-			Address address = new Address();
-			address.setId(shippingAddressId);
-			company.setShippingAddress(address);
-		}
-
-		long contactInfoId = rs.getLong("contactinfo");
-		if (contactInfoId > 0) {
-			ContactInfo contactInfo = new ContactInfo();
-			contactInfo.setId(contactInfoId);
-			company.setContactInfo(contactInfo);
-		}
-
+		company.setBillingAddress(rs.getString("billingaddr"));
+		company.setShippingAddress(rs.getString("shippingaddr"));
 		company.setCreated(rs.getTimestamp("created"));
 		company.setModified(rs.getTimestamp("modified"));
 		company.setCreatedBy(rs.getString("createdby"));

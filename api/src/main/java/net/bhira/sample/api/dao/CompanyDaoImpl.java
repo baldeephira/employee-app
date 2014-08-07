@@ -35,7 +35,6 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -67,20 +66,20 @@ public class CompanyDaoImpl implements CompanyDao {
 	private static final String SQL_LOAD_BY_ID = "select * from company where id = ?";
 	private static final String SQL_LOAD_ALL = "select * from company";
 	private static final String SQL_INSERT = "insert into company"
-			+ " (name, industry, billingaddr, shippingaddr, contactinfo, created, modified, createdby, modifiedby)"
-			+ " values (?,?,?,?,?,?,?,?,?)";
+			+ " (name, industry, billingaddr, shippingaddr, created, modified, createdby, modifiedby)"
+			+ " values (?,?,?,?,?,?,?,?)";
 	private static final String SQL_UPDATE = "update company set name = ?, industry = ?, billingaddr = ?,"
-			+ "shippingaddr = ?, contactinfo = ?, modified = ?, modifiedby = ? where id = ?";
+			+ "shippingaddr = ?, modified = ?, modifiedby = ? where id = ?";
 	private static final String SQL_DELETE = "delete from company where id = ?";
+	private static final String SQL_CINFO_REL_LOAD = "select contactinfoid from company_cinfo where companyid = ?";
+	private static final String SQL_CINFO_REL_INSERT = "insert into company_cinfo (companyid, contactinfoid) values (?,?)";
+	private static final String SQL_CINFO_REL_DELETE = "delete from company_cinfo where companyid = ?";
 
 	@Autowired
 	DataSource dataSource;
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-
-	@Autowired
-	AddressDao addressDao;
 
 	@Autowired
 	ContactInfoDao contactInfoDao;
@@ -97,14 +96,10 @@ public class CompanyDaoImpl implements CompanyDao {
 
 		if (count > 0) {
 			Company company = list.get(0);
-			if (company.getBillingAddress() != null) {
-				company.setBillingAddress(addressDao.load(company.getBillingAddress().getId()));
-			}
-			if (company.getShippingAddress() != null) {
-				company.setShippingAddress(addressDao.load(company.getShippingAddress().getId()));
-			}
-			if (company.getContactInfo() != null) {
-				company.setContactInfo(contactInfoDao.load(company.getContactInfo().getId()));
+			List<Long> cinfoIds = jdbcTemplate.queryForList(SQL_CINFO_REL_LOAD, Long.class,
+					new Object[] { companyId });
+			if (cinfoIds != null && !cinfoIds.isEmpty()) {
+				company.setContactInfo(contactInfoDao.load(cinfoIds.get(0)));
 			}
 			return company;
 		} else {
@@ -118,136 +113,90 @@ public class CompanyDaoImpl implements CompanyDao {
 	@Override
 	public void save(Company company) throws ObjectNotFoundException, InvalidObjectException,
 			InvalidReferenceException {
-		try {
-			if (company == null) {
-				throw new InvalidObjectException("Company object is null.");
-			}
+		if (company == null) {
+			throw new InvalidObjectException("Company object is null.");
+		}
 
-			company.initForSave();
-			company.validate();
+		company.initForSave();
+		company.validate();
+		boolean isNew = company.isNew();
+		int count = 0;
 
-			// load old model, for cleaning dependent tables
-			Company oldModel = null;
-			if (!company.isNew()) {
-				List<Company> list = jdbcTemplate.query(SQL_LOAD_BY_ID,
-						new Object[] { company.getId() }, new CompanyRowMapper());
-				if (list != null && !list.isEmpty()) {
-					oldModel = list.get(0);
+		if (isNew) {
+			// for new company, construct SQL insert statement
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			count = jdbcTemplate.update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection)
+						throws SQLException {
+					PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
+							Statement.RETURN_GENERATED_KEYS);
+					pstmt.setString(1, company.getName());
+					pstmt.setString(2, company.getIndustry());
+					pstmt.setString(3, company.getBillingAddress());
+					pstmt.setString(4, company.getShippingAddress());
+					pstmt.setTimestamp(5, new Timestamp(company.getCreated().getTime()));
+					pstmt.setTimestamp(6, new Timestamp(company.getModified().getTime()));
+					pstmt.setString(7, company.getCreatedBy());
+					pstmt.setString(8, company.getModifiedBy());
+					return pstmt;
 				}
-			}
+			}, keyHolder);
 
-			// save contained objects in dependent tables
-			if (company.getBillingAddress() != null) {
-				if (oldModel != null && oldModel.getBillingAddress() != null) {
-					company.getBillingAddress().setId(oldModel.getBillingAddress().getId());
-				}
-				addressDao.save(company.getBillingAddress());
-			}
-			if (company.getShippingAddress() != null) {
-				if (oldModel != null && oldModel.getShippingAddress() != null) {
-					company.getShippingAddress().setId(oldModel.getShippingAddress().getId());
-				}
-				addressDao.save(company.getShippingAddress());
-			}
+			// fetch the newly created auto-increment ID
+			company.setId(keyHolder.getKey().longValue());
+			LOG.debug("inserted company, count = {}, id = {}", count, company.getId());
+
+		} else {
+			// for existing company, construct SQL update statement
+			Object[] args = new Object[] { company.getName(), company.getIndustry(),
+					company.getBillingAddress(), company.getShippingAddress(),
+					company.getModified(), company.getModifiedBy(), company.getId() };
+			count = jdbcTemplate.update(SQL_UPDATE, args);
+			LOG.debug("updated company, count = {}, id = {}", count, company.getId());
+		}
+
+		// if insert/update has 0 count value, then throw exception
+		if (count <= 0) {
+			throw new ObjectNotFoundException("Company with ID " + company.getId()
+					+ " was not found.");
+		}
+
+		// update dependent entries, as needed
+		if (isNew) {
+
+			// for new model if there is contact info, save it to contact info table and then
+			// add entry in relationship table
 			if (company.getContactInfo() != null) {
-				if (oldModel != null && oldModel.getContactInfo() != null) {
-					company.getContactInfo().setId(oldModel.getContactInfo().getId());
-				}
 				contactInfoDao.save(company.getContactInfo());
+				Object[] args = new Object[] { company.getId(), company.getContactInfo().getId() };
+				jdbcTemplate.update(SQL_CINFO_REL_INSERT, args);
 			}
 
-			int count = 0;
-			if (company.isNew()) {
-				// for new company, construct SQL insert statement
-				KeyHolder keyHolder = new GeneratedKeyHolder();
-				count = jdbcTemplate.update(new PreparedStatementCreator() {
-					public PreparedStatement createPreparedStatement(Connection connection)
-							throws SQLException {
-						PreparedStatement pstmt = connection.prepareStatement(SQL_INSERT,
-								Statement.RETURN_GENERATED_KEYS);
-						pstmt.setString(1, company.getName());
-						pstmt.setString(2, company.getIndustry());
-						if (company.getBillingAddress() == null) {
-							pstmt.setNull(3, java.sql.Types.BIGINT);
-						} else {
-							pstmt.setLong(3, company.getBillingAddress().getId());
-						}
-						if (company.getShippingAddress() == null) {
-							pstmt.setNull(4, java.sql.Types.BIGINT);
-						} else {
-							pstmt.setLong(4, company.getShippingAddress().getId());
-						}
-						if (company.getContactInfo() == null) {
-							pstmt.setNull(5, java.sql.Types.BIGINT);
-						} else {
-							pstmt.setLong(5, company.getContactInfo().getId());
-						}
-						pstmt.setTimestamp(6, new Timestamp(company.getCreated().getTime()));
-						pstmt.setTimestamp(7, new Timestamp(company.getModified().getTime()));
-						pstmt.setString(8, company.getCreatedBy());
-						pstmt.setString(9, company.getModifiedBy());
-						return pstmt;
-					}
-				}, keyHolder);
+		} else {
+			// for existing model, fetch contact info ID from relationship table
+			List<Long> cinfoIds = jdbcTemplate.queryForList(SQL_CINFO_REL_LOAD, Long.class,
+					new Object[] { company.getId() });
+			Long cinfoId = (cinfoIds != null && !cinfoIds.isEmpty()) ? cinfoIds.get(0) : null;
 
-				// fetch the newly created auto-increment ID
-				company.setId(keyHolder.getKey().longValue());
-				LOG.debug("inserted company, count = {}, id = {}", count, company.getId());
+			if (company.getContactInfo() == null) {
+				// clean up old contact info entry, if needed
+				if (cinfoId != null) {
+					jdbcTemplate.update(SQL_CINFO_REL_DELETE, new Object[] { company.getId() });
+					contactInfoDao.delete(cinfoId);
+				}
 
 			} else {
-				// for existing company, construct SQL update statement
-				Long bAddrId = company.getBillingAddress() == null ? null : company
-						.getBillingAddress().getId();
-				Long sAddrId = company.getShippingAddress() == null ? null : company
-						.getShippingAddress().getId();
-				Long cInfoId = company.getContactInfo() == null ? null : company.getContactInfo()
-						.getId();
-				Object[] args = new Object[] { company.getName(), company.getIndustry(), bAddrId,
-						sAddrId, cInfoId, company.getModified(), company.getModifiedBy(),
-						company.getId() };
-				count = jdbcTemplate.update(SQL_UPDATE, args);
-				LOG.debug("updated company, count = {}, id = {}", count, company.getId());
-			}
-
-			// if insert/update has 0 count value, then rollback
-			if (count <= 0) {
-				throw new ObjectNotFoundException("Company with ID " + company.getId()
-						+ " was not found.");
-			}
-
-			// check if any dependent table entries need to be deleted
-			if (oldModel != null) {
-
-				// delete the old billing address entry (no longer in new model)
-				if (company.getBillingAddress() == null && oldModel.getBillingAddress() != null) {
-					addressDao.delete(oldModel.getBillingAddress().getId());
-				}
-
-				// check if shippingAddress key needs to be updated
-				if (company.getShippingAddress() == null && oldModel.getShippingAddress() != null) {
-					addressDao.delete(oldModel.getShippingAddress().getId());
-				}
-
-				// delete the old contact info entry (no longer in new model)
-				if (company.getContactInfo() == null && oldModel.getContactInfo() != null) {
-					contactInfoDao.delete(oldModel.getContactInfo().getId());
+				// insert/update contact info entry
+				if (cinfoId != null) {
+					company.getContactInfo().setId(cinfoId);
+					contactInfoDao.save(company.getContactInfo());
+				} else {
+					contactInfoDao.save(company.getContactInfo());
+					Object[] args = new Object[] { company.getId(),
+							company.getContactInfo().getId() };
+					jdbcTemplate.update(SQL_CINFO_REL_INSERT, args);
 				}
 			}
-		} catch (DataIntegrityViolationException dive) {
-			String msg = dive.getMessage();
-			if (msg != null) {
-				if (msg.contains("fk_company_baddr")) {
-					throw new InvalidReferenceException(
-							"Invalid reference for attribute 'billingAddress'", dive);
-				} else if (msg.contains("fk_company_saddr")) {
-					throw new InvalidReferenceException(
-							"Invalid reference for attribute 'shippingAddress'", dive);
-				} else if (msg.contains("fk_company_cinfo")) {
-					throw new InvalidReferenceException(
-							"Invalid reference for attribute 'contactInfo'", dive);
-				}
-			}
-			throw dive;
 		}
 	}
 
@@ -258,28 +207,21 @@ public class CompanyDaoImpl implements CompanyDao {
 	public boolean delete(long companyId) {
 		int count = 0;
 
-		// load the existing company from database
-		List<Company> companies = jdbcTemplate.query(SQL_LOAD_BY_ID, new Object[] { companyId },
-				new CompanyRowMapper());
+		// load ID from contact info relationship table
+		List<Long> cinfoIds = jdbcTemplate.queryForList(SQL_CINFO_REL_LOAD, Long.class,
+				new Object[] { companyId });
+		Long cinfoId = (cinfoIds != null && !cinfoIds.isEmpty()) ? cinfoIds.get(0) : null;
 
-		if (companies != null && !companies.isEmpty()) {
-			Company company = companies.get(0);
-
-			// delete the row from company table
-			count = jdbcTemplate.update(SQL_DELETE, new Object[] { companyId });
-			LOG.debug("deleted company, count = {}, id = {}", count, companyId);
-
-			// delete all rows from dependent tables
-			if (company.getBillingAddress() != null) {
-				addressDao.delete(company.getBillingAddress().getId());
-			}
-			if (company.getShippingAddress() != null) {
-				addressDao.delete(company.getShippingAddress().getId());
-			}
-			if (company.getContactInfo() != null) {
-				contactInfoDao.delete(company.getContactInfo().getId());
-			}
+		// delete relationship entry & contact info entry, if needed
+		if (cinfoId != null) {
+			jdbcTemplate.update(SQL_CINFO_REL_DELETE, new Object[] { companyId });
+			contactInfoDao.delete(cinfoId);
 		}
+
+		// delete the row from company table
+		count = jdbcTemplate.update(SQL_DELETE, new Object[] { companyId });
+		LOG.debug("deleted company, count = {}, id = {}", count, companyId);
+
 		return (count > 0);
 	}
 

@@ -72,14 +72,8 @@ public class DepartmentTest {
 	@Test
 	public void testGetBillingAddress() {
 		Department department = new Department();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		department.setBillingAddress(address);
-		assertEquals(address, department.getBillingAddress());
+		department.setBillingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", department.getBillingAddress());
 	}
 
 	/**
@@ -89,14 +83,8 @@ public class DepartmentTest {
 	@Test
 	public void testSetBillingAddress() {
 		Department department = new Department();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		department.setBillingAddress(address);
-		assertEquals(address, department.getBillingAddress());
+		department.setBillingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", department.getBillingAddress());
 	}
 
 	/**
@@ -105,14 +93,8 @@ public class DepartmentTest {
 	@Test
 	public void testGetShippingAddress() {
 		Department department = new Department();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		department.setShippingAddress(address);
-		assertEquals(address, department.getShippingAddress());
+		department.setShippingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", department.getShippingAddress());
 	}
 
 	/**
@@ -122,14 +104,8 @@ public class DepartmentTest {
 	@Test
 	public void testSetShippingAddress() {
 		Department department = new Department();
-		Address address = new Address();
-		address.setStreet("123 Main Street");
-		address.setCity("San Francisco");
-		address.setState("CA");
-		address.setZipcode("94024");
-		address.setCountry("USA");
-		department.setShippingAddress(address);
-		assertEquals(address, department.getShippingAddress());
+		department.setShippingAddress("123 Main Street, San Francisco, CA 94024, USA");
+		assertEquals("123 Main Street, San Francisco, CA 94024, USA", department.getShippingAddress());
 	}
 
 	/**
